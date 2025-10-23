@@ -1,5 +1,8 @@
+import 'package:find_uf/constants/route.dart';
 import 'package:find_uf/services/auth/supabase_config.dart';
-import 'package:find_uf/views/auth/register_view.dart';
+import 'package:find_uf/views/auth/login_view.dart';
+import 'package:find_uf/views/auth/registro_view.dart';
+import 'package:find_uf/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,7 +23,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
        
       ),
-      home: const RegisterView(),
+      home: const RegistroView(),
+      routes: 
+      {
+        loginRoute:(context) => LoginView(),
+        registroRoute:(context)  => RegistroView(),
+        homeRoute:(context) => HomePage(),
+
+      }
     );
   }
 }

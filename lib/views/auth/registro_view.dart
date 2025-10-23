@@ -1,18 +1,26 @@
+import 'dart:io';
+
+import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
-class RegisterView extends StatefulWidget {
-  const RegisterView({Key? key}) : super(key: key);
+class RegistroView extends StatefulWidget {
+  const RegistroView({super.key});
 
   @override
-  _RegisterViewState createState() => _RegisterViewState();
+  _RegistroViewState createState() => _RegistroViewState();
 }
 
-class _RegisterViewState extends State<RegisterView> {
+class _RegistroViewState extends State<RegistroView> {
   late final TextEditingController _nome;
   late final TextEditingController _telefone;
   late final TextEditingController _email;
   late final TextEditingController _senha;
+
+  File? imagemSelecionada;
+  final ImagePicker tiraFoto = ImagePicker();
 
   @override
   void initState() {
@@ -44,10 +52,10 @@ class _RegisterViewState extends State<RegisterView> {
               ),
             ),
             SizedBox(height: 16),
-            TextField(
+            TextFormField(
               controller: _telefone,
               keyboardType: TextInputType.phone,
-              
+
               decoration: InputDecoration(
                 labelText: "Número de telefone",
                 hintText: "(99) 99999-9999",
@@ -84,7 +92,21 @@ class _RegisterViewState extends State<RegisterView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TapButton(
-                  onTap: () {},
+                  onTap: () {
+                    final email = _email.text;
+                    final senha = _senha.text;
+                    try {
+                      AuthService.supabase().registrarUser(
+                        email: email,
+                        senha: senha,
+                      );
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+                    } catch (e) {
+                      
+                    }
+                  },
                   text: "Registrar",
                   color: Color.fromARGB(255, 23, 60, 123),
                 ),
@@ -94,7 +116,16 @@ class _RegisterViewState extends State<RegisterView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text("Já possui uma conta? "),
-                TextButton(onPressed: () {}, child: Text("Faça o login.")),
+                TextButton(
+                  onPressed: () {
+                    try {
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                    } catch (e) {}
+                  },
+                  child: Text("Faça o login."),
+                ),
               ],
             ),
           ],

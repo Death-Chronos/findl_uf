@@ -1,3 +1,5 @@
+import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 
@@ -59,7 +61,12 @@ class _LoginViewState extends State<LoginView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TapButton(
-                  onTap: () {},
+                  onTap: () {
+                    final email = _email.text;
+                    final senha = _senha.text;
+
+                    AuthService.supabase().login(email: email, senha: senha);
+                  },
                   text: "Login",
                   color: Color.fromARGB(255, 23, 60, 123),
                 ),
@@ -69,7 +76,14 @@ class _LoginViewState extends State<LoginView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text("Não possui uma conta? "),
-                TextButton(onPressed: () {}, child: Text("Faça o registro.")),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(registroRoute, (route) => false);
+                  },
+                  child: Text("Faça o registro."),
+                ),
               ],
             ),
           ],
