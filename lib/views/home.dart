@@ -27,19 +27,16 @@ class HomePage extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // Botão de deslogar — ocupa largura máxima disponível (dentro do padding)
                 TapButton(
-                  onTap: () {
+                  onTap: () async {
                     try {
-                      AuthService.supabase().logout();
-                      
-                      Navigator.of(
-                      context,
-                    ).pushNamedAndRemoveUntil(registroRoute, (route) => false);
-                    } catch (e) {
-                      
-                    }
-                    
+                      await AuthService.supabase().logout();
+
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        registroRoute,
+                        (route) => false,
+                      );
+                    } catch (e) {}
                   },
                   text: "Deslogar",
                   color: Color.fromARGB(255, 23, 60, 123),

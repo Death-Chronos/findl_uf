@@ -64,8 +64,14 @@ class _LoginViewState extends State<LoginView> {
                   onTap: () {
                     final email = _email.text;
                     final senha = _senha.text;
-
-                    AuthService.supabase().login(email: email, senha: senha);
+                    try {
+                      AuthService.supabase().login(email: email, senha: senha);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        homeRoute, 
+                        (route) => false);
+                    } catch (e) {
+                      
+                    }
                   },
                   text: "Login",
                   color: Color.fromARGB(255, 23, 60, 123),
