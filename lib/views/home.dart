@@ -36,7 +36,9 @@ class HomePage extends StatelessWidget {
                         registroRoute,
                         (route) => false,
                       );
-                    } catch (e) {}
+                    } catch (e) {
+                      print("Erro ao fazer logout: "+ e.toString());
+                    }
                   },
                   text: "Deslogar",
                   color: Color.fromARGB(255, 23, 60, 123),

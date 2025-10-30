@@ -1,10 +1,11 @@
 import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/services/auth/auth_exceptions.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 
 class LoginView extends StatefulWidget {
-  const LoginView({Key? key}) : super(key: key);
+  const LoginView({super.key});
 
   @override
   _LoginViewState createState() => _LoginViewState();
@@ -24,6 +25,11 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Login"),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF173C7B),
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -61,16 +67,23 @@ class _LoginViewState extends State<LoginView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TapButton(
-                  onTap: () {
+                  onTap: () async {
                     final email = _email.text;
                     final senha = _senha.text;
                     try {
-                      AuthService.supabase().login(email: email, senha: senha);
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        homeRoute, 
-                        (route) => false);
+                      await AuthService.supabase().login(
+                        email: email,
+                        senha: senha,
+                      );
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+                    } on EmailNotConfirmedAuthException {
+                      Navigator.of(
+                        context,
+                      ).pushNamed(verificarEmailRoute, arguments: email);
                     } catch (e) {
-                      
+                      throw GenericAuthException();
                     }
                   },
                   text: "Login",

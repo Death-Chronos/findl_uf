@@ -22,10 +22,9 @@ abstract class AuthProvider {
   });
 
   /// Confirma email do usuário
-  Future<void> enviarVerificacaoEmail();
-
-  /// Verifica se o usuário está logado
-  Future<bool> estaLogado();
+  Future<void> enviarVerificacaoEmail({
+    required String email,
+  });
 
   /// Obtém o usuário atual
   MyAuthUser? get getUsuarioAtual;

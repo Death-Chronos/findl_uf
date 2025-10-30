@@ -73,3 +73,9 @@ class NetworkAuthException implements Exception {
   @override
   String toString() => 'Erro de conexão. Verifique sua internet.';
 }
+
+class OverEmailSendRateLimitException implements Exception{
+  const OverEmailSendRateLimitException();
+  @override
+  String toString() => 'Curto intervalo de requisição de envio de email.';
+}

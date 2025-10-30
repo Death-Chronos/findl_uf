@@ -92,19 +92,20 @@ class _RegistroViewState extends State<RegistroView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TapButton(
-                  onTap: () {
+                  onTap: () async {
                     final email = _email.text;
                     final senha = _senha.text;
                     try {
-                      AuthService.supabase().registrarUser(
+                      print("Tentando fazer registro");
+                      await AuthService.supabase().registrarUser(
                         email: email,
                         senha: senha,
                       );
                       Navigator.of(
                         context,
-                      ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+                      ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
                     } catch (e) {
-                      
+                      print("Erro ao fazer registro: "+ e.toString());
                     }
                   },
                   text: "Registrar",

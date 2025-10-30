@@ -17,18 +17,13 @@ class AuthService implements AuthProvider {
   }
 
   @override
-  Future<void> enviarVerificacaoEmail() {
-    return provider.enviarVerificacaoEmail();
+  Future<void> enviarVerificacaoEmail({required String email}) {
+    return provider.enviarVerificacaoEmail(email: email);
   }
 
   @override
   Future<void> deletarConta() {
     return provider.deletarConta();
-  }
-
-  @override
-  Future<bool> estaLogado() {
-    return provider.estaLogado();
   }
 
   @override
@@ -41,7 +36,7 @@ class AuthService implements AuthProvider {
 
   @override
   Future<void> logout() {
-    return logout();
+    return provider.logout();
   }
 
   @override

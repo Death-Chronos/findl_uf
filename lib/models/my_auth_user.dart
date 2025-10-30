@@ -18,7 +18,7 @@ class MyAuthUser {
     return MyAuthUser(
       id: json['id'],
       email: json['email'],
-      emailConfirmado: json['email_confirmed_at'] != null,
+      emailConfirmado: json['confirmed_at'] != null,
 
     );
   }

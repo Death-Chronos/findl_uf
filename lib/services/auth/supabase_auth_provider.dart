@@ -15,16 +15,15 @@ class SupabaseAuthProvider extends AuthProvider {
     required String senha,
   }) async {
     try {
-      await supabase.auth.signUp(password: senha, email: email);
-
-      final user = getUsuarioAtual;
-      if (user != null) {
-        return user;
-      } else {
+      final response = await supabase.auth.signUp(
+        password: senha,
+        email: email,
+      );
+      if (response.user == null) {
         throw UserNotLoggedInAuthException();
       }
+      return MyAuthUser.fromSupabase(response.user!);
     } on AuthException catch (e) {
-      // Supabase usa error.code para identificar erros, não error.message
       switch (e.code) {
         case 'weak_password':
           throw WeakPasswordAuthException();
@@ -36,17 +35,10 @@ class SupabaseAuthProvider extends AuthProvider {
           throw InvalidEmailAuthException();
         case 'invalid_credentials':
           throw InvalidCredentialsAuthException();
-        case 'email_not_confirmed':
-          throw EmailNotConfirmedAuthException();
-
-        case 'user_not_found':
-          throw UserNotFoundAuthException();
-        case 'same_password':
-          throw SamePasswordAuthException();
-        case 'session_not_found':
-        case 'session_expired':
-          throw SessionExpiredAuthException();
+        case 'over_email_send_rate_limit':
+          throw OverEmailSendRateLimitException();
         default:
+          print("Erro não explorado: " + e.toString());
           throw GenericAuthException();
       }
     } catch (e) {
@@ -61,12 +53,10 @@ class SupabaseAuthProvider extends AuthProvider {
   }) async {
     try {
       await supabase.auth.signInWithPassword(password: senha, email: email);
-
       final user = getUsuarioAtual;
 
       if (user != null) {
         return user;
-        
       } else {
         throw UserNotLoggedInAuthException();
       }
@@ -77,6 +67,7 @@ class SupabaseAuthProvider extends AuthProvider {
 
         case 'email_not_confirmed':
           throw EmailNotConfirmedAuthException();
+
 
         case 'over_request_rate_limit':
         case 'over_email_send_rate_limit':
@@ -106,18 +97,13 @@ class SupabaseAuthProvider extends AuthProvider {
     throw UnimplementedError();
   }
 
-  @override
-  Future<bool> estaLogado() {
-    // TODO: implement estaLogado
-    throw UnimplementedError();
-  }
 
   @override
-  Future<void> logout() {
+  Future<void> logout() async {
     final user = supabase.auth.currentUser;
 
     if (user != null) {
-      return supabase.auth.signOut();
+      await supabase.auth.signOut();
     } else {
       throw UserNotLoggedInAuthException();
     }
@@ -125,13 +111,8 @@ class SupabaseAuthProvider extends AuthProvider {
 
   @override
   MyAuthUser? get getUsuarioAtual {
-    final user = supabase.auth.currentUser;
-
-    if (user != null) {
-      return MyAuthUser.fromSupabase(user);
-    } else {
-      return null;
-    }
+    final userAtual = supabase.auth.currentUser;
+    return userAtual != null ? MyAuthUser.fromSupabase(userAtual) : null;
   }
 
   @override
@@ -141,13 +122,8 @@ class SupabaseAuthProvider extends AuthProvider {
   }
 
   @override
-  Future<void> enviarVerificacaoEmail() async {
-    final user = getUsuarioAtual;
+  Future<void> enviarVerificacaoEmail({required email}) async {
 
-    if (user != null) {
-      await supabase.auth.resend(type: OtpType.signup, email: user.email);
-    } else {
-      throw UserNotLoggedInAuthException();
-    }
+      await supabase.auth.resend(type: OtpType.signup, email: email);
   }
 }
