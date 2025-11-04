@@ -14,6 +14,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email;
   late final TextEditingController _senha;
+  bool _esconderSenha = true;
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class _LoginViewState extends State<LoginView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Crie sua conta para acessar o aplicativo, ou entre como visitante.",
+              "Realize o login para acessar o aplicativo, ou entre como visitante.",
               style: TextStyle(fontSize: 14),
             ),
             TextField(
@@ -51,16 +52,34 @@ class _LoginViewState extends State<LoginView> {
             TextField(
               controller: _senha,
               autocorrect: false,
-              obscureText: true,
+              obscureText: _esconderSenha,
               enableSuggestions: false,
               decoration: InputDecoration(
                 labelText: "Senha",
                 border: OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.visibility),
+                  onPressed: () {
+                    _esconderSenha = !_esconderSenha;
+                  },
+                  icon: Icon(
+                    _esconderSenha ? Icons.visibility : Icons.visibility_off
+                  ),
                 ),
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Esqueceu a sua senha?"),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(registroRoute, (route) => false);
+                  },
+                  child: Text("Clique aqui"),
+                ),
+              ],
             ),
             SizedBox(height: 16),
             Row(

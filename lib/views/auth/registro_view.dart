@@ -19,6 +19,8 @@ class _RegistroViewState extends State<RegistroView> {
   late final TextEditingController _email;
   late final TextEditingController _senha;
 
+  bool _esconderSenha = true;
+
   File? imagemSelecionada;
   final ImagePicker tiraFoto = ImagePicker();
 
@@ -76,14 +78,18 @@ class _RegistroViewState extends State<RegistroView> {
             TextField(
               controller: _senha,
               autocorrect: false,
-              obscureText: true,
+              obscureText: _esconderSenha,
               enableSuggestions: false,
               decoration: InputDecoration(
                 labelText: "Senha",
                 border: OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  onPressed: () {},
-                  icon: Icon(Icons.visibility),
+                  onPressed: () {
+                    _esconderSenha =!_esconderSenha;
+                  },
+                  icon: Icon(
+                    _esconderSenha ? Icons.visibility : Icons.visibility_off
+                  ),
                 ),
               ),
             ),
