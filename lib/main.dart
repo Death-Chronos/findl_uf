@@ -19,30 +19,68 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'FindlUF',
       theme: ThemeData(),
-      initialRoute: registroRoute,
+      // AuthGate agora é a tela inicial - ela decide para onde ir
+      home: const AuthGate(),
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case loginRoute:
             return MaterialPageRoute(builder: (_) => LoginView());
-            
+
           case registroRoute:
             return MaterialPageRoute(builder: (_) => RegistroView());
-            
+
           case homeRoute:
             return MaterialPageRoute(builder: (_) => HomePage());
-            
+
           case verificarEmailRoute:
             final email = settings.arguments as String;
             return MaterialPageRoute(
               builder: (_) => VerificarEmailView(email: email),
             );
-            
+
           default:
             return MaterialPageRoute(builder: (_) => RegistroView());
         }
       },
     );
+  }
+}
+
+// Widget que verifica o estado de autenticação e decide a rota inicial
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Session?>(
+      // Verifica se existe uma sessão ativa do Supabase
+      future: _checkSession(),
+      builder: (context, snapshot) {
+        // Enquanto verifica, mostra um loading
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        // Quando terminar de verificar, decide a tela baseado na sessão
+        final session = snapshot.data;
+
+        if (session != null) {
+          return HomePage();
+        } else {
+          // Sem sessão -> vai para login
+          return LoginView();
+        }
+      },
+    );
+  }
+
+  // Método auxiliar que busca a sessão atual
+  Future<Session?> _checkSession() async {
+    final supabase = Supabase.instance.client;
+    return supabase.auth.currentSession;
   }
 }
