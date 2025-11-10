@@ -35,6 +35,10 @@ class VerificarEmailView extends StatelessWidget {
         title: const Text("Verificar e-mail"),
         centerTitle: true,
         backgroundColor: const Color(0xFF173C7B),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SafeArea(
         child: Center(
@@ -53,17 +57,17 @@ class VerificarEmailView extends StatelessWidget {
                   "Confirmação de e-mail para:",
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   email,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w500,
-                      ),
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 24),
                 const Text(
