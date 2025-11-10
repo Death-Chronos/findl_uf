@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:find_uf/constants/route.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
+import 'package:find_uf/tools/validar_email.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -36,6 +37,11 @@ class _RegistroViewState extends State<RegistroView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Registro"),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF173C7B),
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -57,7 +63,6 @@ class _RegistroViewState extends State<RegistroView> {
             TextFormField(
               controller: _telefone,
               keyboardType: TextInputType.phone,
-
               decoration: InputDecoration(
                 labelText: "Número de telefone",
                 hintText: "(99) 99999-9999",
@@ -85,10 +90,12 @@ class _RegistroViewState extends State<RegistroView> {
                 border: OutlineInputBorder(),
                 suffixIcon: IconButton(
                   onPressed: () {
-                    _esconderSenha =!_esconderSenha;
+                    setState(() {
+                      _esconderSenha = !_esconderSenha;
+                    });
                   },
                   icon: Icon(
-                    _esconderSenha ? Icons.visibility : Icons.visibility_off
+                    _esconderSenha ? Icons.visibility : Icons.visibility_off,
                   ),
                 ),
               ),
@@ -102,7 +109,16 @@ class _RegistroViewState extends State<RegistroView> {
                     final email = _email.text;
                     final senha = _senha.text;
                     try {
-                      print("Tentando fazer registro");
+                      final erro = ValidarEmail.validar(_email.text);
+
+                    if (erro != null) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(erro)));
+                      return;
+                    }
+
+                    // Email válido, enviar
                       await AuthService.supabase().registrarUser(
                         email: email,
                         senha: senha,
@@ -111,11 +127,11 @@ class _RegistroViewState extends State<RegistroView> {
                         context,
                       ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
                     } catch (e) {
-                      print("Erro ao fazer registro: "+ e.toString());
+                      print("Erro ao fazer registro: " + e.toString());
                     }
                   },
                   text: "Registrar",
-                  color: Color.fromARGB(255, 23, 60, 123),
+                  color:  Color(0xFF99C842),
                 ),
               ],
             ),

@@ -32,12 +32,11 @@ class HomePage extends StatelessWidget {
                     try {
                       await AuthService.supabase().logout();
 
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        registroRoute,
-                        (route) => false,
-                      );
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
                     } catch (e) {
-                      print("Erro ao fazer logout: "+ e.toString());
+                      print("Erro ao fazer logout: " + e.toString());
                     }
                   },
                   text: "Deslogar",

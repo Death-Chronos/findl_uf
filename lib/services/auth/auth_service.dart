@@ -1,6 +1,7 @@
 import 'package:find_uf/models/my_auth_user.dart';
 import 'package:find_uf/services/auth/auth_provider.dart';
 import 'package:find_uf/services/auth/supabase_auth_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService implements AuthProvider {
   final AuthProvider provider;
@@ -48,7 +49,15 @@ class AuthService implements AuthProvider {
   }
 
   @override
-  Future<void> resetarSenha({required String email}) {
-    return provider.resetarSenha(email: email);
+  Future<AuthResponse> confirmarTokenRecuperacaoSenha({
+    required String token,
+    String? email,
+  }) {
+    return provider.confirmarTokenRecuperacaoSenha(token: token, email: email);
+  }
+
+  @override
+  Future<void> enviarTokenRecuperacaoSenha({required String email}) {
+    return provider.enviarTokenRecuperacaoSenha(email: email);
   }
 }

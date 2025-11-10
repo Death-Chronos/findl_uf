@@ -1,6 +1,7 @@
 import 'package:find_uf/constants/route.dart';
 import 'package:find_uf/services/auth/auth_exceptions.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
+import 'package:find_uf/tools/validar_email.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 
@@ -59,7 +60,10 @@ class _LoginViewState extends State<LoginView> {
                 border: OutlineInputBorder(),
                 suffixIcon: IconButton(
                   onPressed: () {
-                    _esconderSenha = !_esconderSenha;
+                    setState(() {
+                      _esconderSenha = !_esconderSenha;
+                    });
+                    
                   },
                   icon: Icon(
                     _esconderSenha ? Icons.visibility : Icons.visibility_off
@@ -75,7 +79,7 @@ class _LoginViewState extends State<LoginView> {
                   onPressed: () {
                     Navigator.of(
                       context,
-                    ).pushNamedAndRemoveUntil(registroRoute, (route) => false);
+                    ).pushNamedAndRemoveUntil(resetarSenhaRoute, (route) => false);
                   },
                   child: Text("Clique aqui"),
                 ),
@@ -89,6 +93,16 @@ class _LoginViewState extends State<LoginView> {
                   onTap: () async {
                     final email = _email.text;
                     final senha = _senha.text;
+
+                    final erro = ValidarEmail.validar(_email.text);
+
+                    if (erro != null) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(erro)));
+                      return;
+                    }
+
                     try {
                       await AuthService.supabase().login(
                         email: email,
@@ -106,7 +120,7 @@ class _LoginViewState extends State<LoginView> {
                     }
                   },
                   text: "Login",
-                  color: Color.fromARGB(255, 23, 60, 123),
+                  color: Color(0xFF99C842),
                 ),
               ],
             ),

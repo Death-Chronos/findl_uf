@@ -1,7 +1,9 @@
 import 'package:find_uf/constants/route.dart';
 import 'package:find_uf/services/auth/supabase_config.dart';
+import 'package:find_uf/views/auth/atualizar_senha.dart';
 import 'package:find_uf/views/auth/login_view.dart';
 import 'package:find_uf/views/auth/registro_view.dart';
+import 'package:find_uf/views/auth/resetar_senha_view.dart';
 import 'package:find_uf/views/auth/verificar_email_view.dart';
 import 'package:find_uf/views/home.dart';
 import 'package:flutter/material.dart';
@@ -21,25 +23,27 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'FindlUF',
       theme: ThemeData(),
-      // AuthGate agora é a tela inicial - ela decide para onde ir
       home: const AuthGate(),
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case loginRoute:
             return MaterialPageRoute(builder: (_) => LoginView());
-
           case registroRoute:
             return MaterialPageRoute(builder: (_) => RegistroView());
-
           case homeRoute:
             return MaterialPageRoute(builder: (_) => HomePage());
-
           case verificarEmailRoute:
             final email = settings.arguments as String;
             return MaterialPageRoute(
               builder: (_) => VerificarEmailView(email: email),
             );
-
+          case resetarSenhaRoute:
+            return MaterialPageRoute(builder: (_) => ResetarSenhaView());
+          case atualizarSenhaRoute:
+            final email = settings.arguments as String;
+            return MaterialPageRoute(
+              builder: (_) => AtualizarSenha(email: email),
+            );
           default:
             return MaterialPageRoute(builder: (_) => RegistroView());
         }

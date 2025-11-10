@@ -68,7 +68,6 @@ class SupabaseAuthProvider extends AuthProvider {
         case 'email_not_confirmed':
           throw EmailNotConfirmedAuthException();
 
-
         case 'over_request_rate_limit':
         case 'over_email_send_rate_limit':
           throw TooManyRequestsAuthException();
@@ -86,9 +85,10 @@ class SupabaseAuthProvider extends AuthProvider {
   }
 
   @override
-  Future<MyAuthUser> atualizarUsuario({String? email, String? senha}) {
-    // TODO: implement atualizarUsuario
-    throw UnimplementedError();
+  Future<MyAuthUser> atualizarUsuario({String? email, String? senha}) async {
+    return await supabase.auth
+        .updateUser(UserAttributes(email: email, password: senha))
+        .then((response) => MyAuthUser.fromSupabase(response.user!));
   }
 
   @override
@@ -96,7 +96,6 @@ class SupabaseAuthProvider extends AuthProvider {
     // TODO: implement deletarConta
     throw UnimplementedError();
   }
-
 
   @override
   Future<void> logout() async {
@@ -116,14 +115,32 @@ class SupabaseAuthProvider extends AuthProvider {
   }
 
   @override
-  Future<void> resetarSenha({required String email}) {
-    // TODO: implement resetarSenha
-    throw UnimplementedError();
+  Future<void> enviarVerificacaoEmail({required email}) async {
+    await supabase.auth.resend(type: OtpType.signup, email: email);
   }
 
   @override
-  Future<void> enviarVerificacaoEmail({required email}) async {
+  Future<AuthResponse> confirmarTokenRecuperacaoSenha({
+    required String token,
+    String? email,
+  }) async {
+    if (email == null) {
+      final user = getUsuarioAtual;
+      if (user == null) {
+        throw UserNotLoggedInAuthException();
+      }
+      email = user.email;
+    }
 
-      await supabase.auth.resend(type: OtpType.signup, email: email);
+    return await supabase.auth.verifyOTP(
+      type: OtpType.recovery,
+      token: token,
+      email: email,
+    );
+  }
+
+  @override
+  Future<void> enviarTokenRecuperacaoSenha({required String email}) async {
+    return await supabase.auth.resetPasswordForEmail(email);
   }
 }
