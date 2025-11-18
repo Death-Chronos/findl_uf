@@ -7,10 +7,13 @@ import 'package:find_uf/views/auth/resetar_senha_view.dart';
 import 'package:find_uf/views/auth/verificar_email_view.dart';
 import 'package:find_uf/views/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseApiKey);
   runApp(const MyApp());
 }
