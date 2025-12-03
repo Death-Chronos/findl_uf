@@ -1,5 +1,6 @@
 import 'package:find_uf/constants/route.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
+import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/tools/validar_email.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
@@ -23,14 +24,18 @@ class _ResetarSenhaViewState extends State<ResetarSenhaView> {
     }
 
     try {
-      await AuthService.supabase().enviarTokenRecuperacaoSenha(email: _email.text);
+      await AuthService.supabase().sendPasswordRecoverToken(email: _email.text);
       Navigator.of(context).pushNamedAndRemoveUntil(
         atualizarSenhaRoute,
         (route) => false,
         arguments: _email.text.toString(),
       );
     } catch (e) {
-      print("Erro: $e");
+      showErrorDialog(
+        context,
+        title: "Erro ao resetar senha",
+        message: e.toString(),
+      );
     }
   }
 

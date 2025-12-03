@@ -13,22 +13,22 @@ class AuthService implements AuthProvider {
   }
 
   @override
-  Future<MyAuthUser> atualizarUsuario({String? email, String? senha}) {
-    return provider.atualizarUsuario(email: email, senha: senha);
+  Future<MyAuthUser> updateUser({String? email, String? senha}) {
+    return provider.updateUser(email: email, senha: senha);
   }
 
   @override
-  Future<void> enviarVerificacaoEmail({required String email}) {
-    return provider.enviarVerificacaoEmail(email: email);
+  Future<void> sendEmailVerification({required String email}) {
+    return provider.sendEmailVerification(email: email);
   }
 
   @override
-  Future<void> deletarConta() {
-    return provider.deletarConta();
+  Future<void> deleteAccount() {
+    return provider.deleteAccount();
   }
 
   @override
-  MyAuthUser? get getUsuarioAtual => provider.getUsuarioAtual;
+  MyAuthUser? get getUser => provider.getUser;
 
   @override
   Future<MyAuthUser> login({required String email, required String senha}) {
@@ -41,23 +41,23 @@ class AuthService implements AuthProvider {
   }
 
   @override
-  Future<MyAuthUser> registrarUser({
+  Future<void> registerUser({
     required String email,
     required String senha,
   }) {
-    return provider.registrarUser(email: email, senha: senha);
+    return provider.registerUser(email: email, senha: senha);
   }
 
   @override
-  Future<AuthResponse> confirmarTokenRecuperacaoSenha({
+  Future<AuthResponse> confirmPasswordRecoverToken({
     required String token,
     String? email,
   }) {
-    return provider.confirmarTokenRecuperacaoSenha(token: token, email: email);
+    return provider.confirmPasswordRecoverToken(token: token, email: email);
   }
 
   @override
-  Future<void> enviarTokenRecuperacaoSenha({required String email}) {
-    return provider.enviarTokenRecuperacaoSenha(email: email);
+  Future<void> sendPasswordRecoverToken({required String email}) {
+    return provider.sendPasswordRecoverToken(email: email);
   }
 }

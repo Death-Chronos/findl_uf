@@ -3,7 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class AuthProvider {
   /// Registra um novo usuário
-  Future<MyAuthUser> registrarUser({
+  Future<void> registerUser({
     required String email,
     required String senha,
   });
@@ -15,23 +15,23 @@ abstract class AuthProvider {
   Future<void> logout();
 
   /// Envia email com token para resetar senha
-  Future<void> enviarTokenRecuperacaoSenha({required String email});
+  Future<void> sendPasswordRecoverToken({required String email});
 
   /// Confirma o token
-  Future<AuthResponse> confirmarTokenRecuperacaoSenha({
+  Future<AuthResponse> confirmPasswordRecoverToken({
     required String token,
     String? email,
   });
 
   /// Confirma email do usuário
-  Future<void> enviarVerificacaoEmail({required String email});
+  Future<void> sendEmailVerification({required String email});
 
   /// Obtém o usuário atual
-  MyAuthUser? get getUsuarioAtual;
+  MyAuthUser? get getUser;
 
   /// Atualiza dados do usuário
-  Future<MyAuthUser> atualizarUsuario({String? email, String? senha});
+  Future<MyAuthUser> updateUser({String? email, String? senha});
 
   /// Deleta conta do usuário
-  Future<void> deletarConta();
+  Future<void> deleteAccount();
 }

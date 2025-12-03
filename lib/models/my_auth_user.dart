@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -19,30 +18,27 @@ class MyAuthUser {
       id: json['id'],
       email: json['email'],
       emailConfirmado: json['confirmed_at'] != null,
-
     );
   }
 
   factory MyAuthUser.fromSupabase(User user) {
-      return MyAuthUser(
-        id: user.id,
-        email: user.email!, 
-        emailConfirmado: user.emailConfirmedAt != null,
-        );
-    }
+    final bool emailConfirmado = user.emailConfirmedAt != null;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'email': email,
-    };
+    if (user.email == null) {
+      throw Exception("Supabase retornou usuário sem email.");
+    }
+    return MyAuthUser(
+      id: user.id,
+      email: user.email!,
+      emailConfirmado: emailConfirmado,
+    );
   }
 
-  MyAuthUser copyWith({
-    String? id,
-    String? email,
-    bool? emailConfirmado,
-  }) {
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'email': email};
+  }
+
+  MyAuthUser copyWith({String? id, String? email, bool? emailConfirmado}) {
     return MyAuthUser(
       id: id ?? this.id,
       email: email ?? this.email,
@@ -54,5 +50,4 @@ class MyAuthUser {
   String toString() {
     return 'UsuarioAuth(id: $id, email: $email, emailConfirmado: $emailConfirmado)';
   }
-
 }

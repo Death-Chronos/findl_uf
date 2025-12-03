@@ -1,3 +1,4 @@
+import 'package:find_uf/tools/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
@@ -9,7 +10,7 @@ class VerificarEmailView extends StatelessWidget {
 
   Future<void> _reenviarEmail(BuildContext context) async {
     try {
-      await AuthService.supabase().enviarVerificacaoEmail(email: email);
+      await AuthService.supabase().sendEmailVerification(email: email);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("E-mail de verificação reenviado com sucesso!"),
@@ -18,12 +19,10 @@ class VerificarEmailView extends StatelessWidget {
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Erro ao reenviar o e-mail: $e"),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
+      showErrorDialog(
+        context,
+        title: "Erro ao reenviar email",
+        message: e.toString(),
       );
     }
   }

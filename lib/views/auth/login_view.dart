@@ -1,6 +1,9 @@
 import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/models/my_auth_user.dart';
 import 'package:find_uf/services/auth/auth_exceptions.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
+import 'package:find_uf/services/profile_service.dart';
+import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/tools/validar_email.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
@@ -63,10 +66,9 @@ class _LoginViewState extends State<LoginView> {
                     setState(() {
                       _esconderSenha = !_esconderSenha;
                     });
-                    
                   },
                   icon: Icon(
-                    _esconderSenha ? Icons.visibility : Icons.visibility_off
+                    _esconderSenha ? Icons.visibility : Icons.visibility_off,
                   ),
                 ),
               ),
@@ -77,9 +79,10 @@ class _LoginViewState extends State<LoginView> {
                 Text("Esqueceu a sua senha?"),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(
-                      context,
-                    ).pushNamedAndRemoveUntil(resetarSenhaRoute, (route) => false);
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      resetarSenhaRoute,
+                      (route) => false,
+                    );
                   },
                   child: Text("Clique aqui"),
                 ),
@@ -104,10 +107,20 @@ class _LoginViewState extends State<LoginView> {
                     }
 
                     try {
-                      await AuthService.supabase().login(
-                        email: email,
-                        senha: senha,
+                      final MyAuthUser user = await AuthService.supabase()
+                          .login(email: email, senha: senha);
+
+                      final userExist = await ProfileService().profileExists(
+                        user.id,
                       );
+                      if (userExist == false) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          completeProfileRoute,
+                          (route) => false,
+                        );
+                        return;
+                      }
+
                       Navigator.of(
                         context,
                       ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
@@ -116,7 +129,11 @@ class _LoginViewState extends State<LoginView> {
                         context,
                       ).pushNamed(verificarEmailRoute, arguments: email);
                     } catch (e) {
-                      throw GenericAuthException();
+                      showErrorDialog(
+                        context,
+                        title: "Erro ao realizar login",
+                        message: e.toString(),
+                      );
                     }
                   },
                   text: "Login",

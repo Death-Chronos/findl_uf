@@ -1,11 +1,12 @@
 import 'package:find_uf/constants/route.dart';
-import 'package:find_uf/services/auth/supabase_config.dart';
+import 'package:find_uf/services/supabase_config.dart';
 import 'package:find_uf/views/auth/atualizar_senha.dart';
 import 'package:find_uf/views/auth/login_view.dart';
-import 'package:find_uf/views/auth/registro_view.dart';
+import 'package:find_uf/views/auth/register_view.dart';
 import 'package:find_uf/views/auth/resetar_senha_view.dart';
 import 'package:find_uf/views/auth/verificar_email_view.dart';
 import 'package:find_uf/views/home.dart';
+import 'package:find_uf/views/profile/complete_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
           case loginRoute:
             return MaterialPageRoute(builder: (_) => LoginView());
           case registroRoute:
-            return MaterialPageRoute(builder: (_) => RegistroView());
+            return MaterialPageRoute(builder: (_) => RegisterView());
           case homeRoute:
             return MaterialPageRoute(builder: (_) => HomePage());
           case verificarEmailRoute:
@@ -47,8 +48,10 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (_) => AtualizarSenha(email: email),
             );
+          case completeProfileRoute:
+            return MaterialPageRoute(builder: (_) => const CompleteProfileView());
           default:
-            return MaterialPageRoute(builder: (_) => RegistroView());
+            return MaterialPageRoute(builder: (_) => RegisterView());
         }
       },
     );
@@ -58,6 +61,12 @@ class MyApp extends StatelessWidget {
 // Widget que verifica o estado de autenticação e decide a rota inicial
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
+
+  // Método auxiliar que busca a sessão atual
+  Future<Session?> _checkSession() async {
+    final supabase = Supabase.instance.client;
+    return supabase.auth.currentSession;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,11 +92,5 @@ class AuthGate extends StatelessWidget {
         }
       },
     );
-  }
-
-  // Método auxiliar que busca a sessão atual
-  Future<Session?> _checkSession() async {
-    final supabase = Supabase.instance.client;
-    return supabase.auth.currentSession;
   }
 }

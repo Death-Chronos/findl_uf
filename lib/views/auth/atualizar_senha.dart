@@ -1,5 +1,6 @@
 import 'package:find_uf/constants/route.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
+import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 
@@ -21,14 +22,19 @@ class _AtualizarSenhaState extends State<AtualizarSenha> {
   bool _esconderConfirmacao = true;
 
   Future<void> _atualizarSenha(BuildContext context) async {
-    await AuthService.supabase().confirmarTokenRecuperacaoSenha(
+    try {
+      await AuthService.supabase().confirmPasswordRecoverToken(
       token: _token.text,
       email: widget.email,
     );
 
-    await AuthService.supabase().atualizarUsuario(senha: _novaSenha.text);
+    await AuthService.supabase().updateUser(senha: _novaSenha.text);
+    } catch (e) {
+      showErrorDialog(context, title: "Erro ao mudar senha", message: e.toString());
+    }
+    
 
-    final usuario = AuthService.supabase().getUsuarioAtual;
+    final usuario = AuthService.supabase().getUser;
     if (usuario != null) {
       // Usuário logado -> Home
       Navigator.of(

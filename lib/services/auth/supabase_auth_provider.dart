@@ -10,7 +10,7 @@ class SupabaseAuthProvider extends AuthProvider {
   final SupabaseClient supabase = Supabase.instance.client;
 
   @override
-  Future<MyAuthUser> registrarUser({
+  Future<void> registerUser({
     required String email,
     required String senha,
   }) async {
@@ -22,7 +22,7 @@ class SupabaseAuthProvider extends AuthProvider {
       if (response.user == null) {
         throw UserNotLoggedInAuthException();
       }
-      return MyAuthUser.fromSupabase(response.user!);
+      // return MyAuthUser.fromSupabase(response.user!);
     } on AuthException catch (e) {
       switch (e.code) {
         case 'weak_password':
@@ -38,7 +38,7 @@ class SupabaseAuthProvider extends AuthProvider {
         case 'over_email_send_rate_limit':
           throw OverEmailSendRateLimitException();
         default:
-          print("Erro não explorado: " + e.toString());
+        print("Erro de autenticação: ${e.message}");
           throw GenericAuthException();
       }
     } catch (e) {
@@ -53,7 +53,7 @@ class SupabaseAuthProvider extends AuthProvider {
   }) async {
     try {
       await supabase.auth.signInWithPassword(password: senha, email: email);
-      final user = getUsuarioAtual;
+      final user = getUser;
 
       if (user != null) {
         return user;
@@ -85,15 +85,15 @@ class SupabaseAuthProvider extends AuthProvider {
   }
 
   @override
-  Future<MyAuthUser> atualizarUsuario({String? email, String? senha}) async {
+  Future<MyAuthUser> updateUser({String? email, String? senha}) async {
     return await supabase.auth
         .updateUser(UserAttributes(email: email, password: senha))
         .then((response) => MyAuthUser.fromSupabase(response.user!));
   }
 
   @override
-  Future<void> deletarConta() {
-    // TODO: implement deletarConta
+  Future<void> deleteAccount() {
+    // TODO: implement deleteAccount
     throw UnimplementedError();
   }
 
@@ -109,23 +109,23 @@ class SupabaseAuthProvider extends AuthProvider {
   }
 
   @override
-  MyAuthUser? get getUsuarioAtual {
+  MyAuthUser? get getUser {
     final userAtual = supabase.auth.currentUser;
     return userAtual != null ? MyAuthUser.fromSupabase(userAtual) : null;
   }
 
   @override
-  Future<void> enviarVerificacaoEmail({required email}) async {
+  Future<void> sendEmailVerification({required email}) async {
     await supabase.auth.resend(type: OtpType.signup, email: email);
   }
 
   @override
-  Future<AuthResponse> confirmarTokenRecuperacaoSenha({
+  Future<AuthResponse> confirmPasswordRecoverToken({
     required String token,
     String? email,
   }) async {
     if (email == null) {
-      final user = getUsuarioAtual;
+      final user = getUser;
       if (user == null) {
         throw UserNotLoggedInAuthException();
       }
@@ -140,7 +140,7 @@ class SupabaseAuthProvider extends AuthProvider {
   }
 
   @override
-  Future<void> enviarTokenRecuperacaoSenha({required String email}) async {
+  Future<void> sendPasswordRecoverToken({required String email}) async {
     return await supabase.auth.resetPasswordForEmail(email);
   }
 }
