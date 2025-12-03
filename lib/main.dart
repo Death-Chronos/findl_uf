@@ -83,7 +83,7 @@ class AuthGate extends StatelessWidget {
 
         // Quando terminar de verificar, decide a tela baseado na sessão
         final session = snapshot.data;
-
+        
         if (session != null) {
           return HomePage();
         } else {

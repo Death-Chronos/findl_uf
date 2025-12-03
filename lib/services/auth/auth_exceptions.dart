@@ -79,3 +79,9 @@ class OverEmailSendRateLimitException implements Exception{
   @override
   String toString() => 'Curto intervalo de requisição de envio de email.';
 }
+
+class EmailDomainNotAllowedException implements Exception{
+  const EmailDomainNotAllowedException();
+  @override
+  String toString() => 'Domínio de email não permitido. Por favor, use um email do domínio da UFERSA Ex: @ufersa.edu.br';
+}

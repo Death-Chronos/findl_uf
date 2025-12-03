@@ -110,20 +110,22 @@ class _LoginViewState extends State<LoginView> {
                       final MyAuthUser user = await AuthService.supabase()
                           .login(email: email, senha: senha);
 
+                      print('user logged in: ${user.id}');
+
                       final userExist = await ProfileService().profileExists(
                         user.id,
                       );
+                      print('user profile exists: $userExist');
                       if (userExist == false) {
                         Navigator.of(context).pushNamedAndRemoveUntil(
                           completeProfileRoute,
                           (route) => false,
                         );
-                        return;
+                      } else {
+                        Navigator.of(
+                          context,
+                        ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
                       }
-
-                      Navigator.of(
-                        context,
-                      ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
                     } on EmailNotConfirmedAuthException {
                       Navigator.of(
                         context,

@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:find_uf/models/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileService {
-  final SupabaseClient _supabase = Supabase.instance.client;
+  final _profiles = Supabase.instance.client.from('perfil');
+  final _photoStorage = Supabase.instance.client.storage.from('foto_perfil');
 
   /// 1. Criar perfil inicial (sem foto)
   Future<void> createProfile({
@@ -11,7 +13,7 @@ class ProfileService {
     required String telefone,
   }) async {
     try {
-      await _supabase.from('perfil').insert({
+      await _profiles.insert({
         'id': userId,
         'nome': nome,
         'telefone': telefone,
@@ -29,16 +31,14 @@ class ProfileService {
     try {
       final String nomeArquivo = '$userId.jpg';
 
-      await _supabase.storage
-          .from('foto_perfil')
+      await _photoStorage
           .upload(
             nomeArquivo,
             imageFile,
             fileOptions: const FileOptions(upsert: true),
           );
 
-      final String publicUrl = _supabase.storage
-          .from('foto_perfil')
+      final String publicUrl = _photoStorage
           .getPublicUrl(nomeArquivo);
 
       return publicUrl;
@@ -53,8 +53,7 @@ class ProfileService {
     required String fotoUrl,
   }) async {
     try {
-      await _supabase
-          .from('perfil')
+      await _profiles
           .update({'foto_url': fotoUrl})
           .eq('id', userId);
     } catch (e) {
@@ -75,19 +74,19 @@ class ProfileService {
 
       if (updates.isEmpty) return;
 
-      await _supabase.from('perfil').update(updates).eq('id', userId);
+      await _profiles.update(updates).eq('id', userId);
     } catch (e) {
       throw Exception('Erro ao atualizar perfil: $e');
     }
   }
 
   /// 5. Buscar perfil completo
-  Future<Map<String, dynamic>?> getProfile(String userId) async {
+  Future<Profile> getProfile(String userId) async {
     try {
       final response =
-          await _supabase.from('perfil').select().eq('id', userId).single();
+          await _profiles.select().eq('id', userId).single();
 
-      return response;
+      return Profile.fromJson(response);
     } catch (e) {
       throw Exception('Erro ao buscar perfil: $e');
     }
@@ -96,7 +95,7 @@ class ProfileService {
   /// 6. Deletar foto do Storage
   Future<void> deleteProfilePhoto(String userId) async {
     try {
-      await _supabase.storage.from('foto_perfil').remove(['$userId.jpg']);
+      await _photoStorage.remove(['$userId.jpg']);
     } catch (e) {
       throw Exception('Erro ao deletar foto: $e');
     }
@@ -136,7 +135,7 @@ class ProfileService {
     required String fotoUrl,
   }) async {
     try {
-      await _supabase.from('perfil').insert({
+      await _profiles.insert({
         'id': userId,
         'nome': nome,
         'telefone': telefone,
@@ -170,8 +169,7 @@ class ProfileService {
   Future<bool> profileExists(String userId) async {
     try {
       final response =
-          await _supabase
-              .from('perfil')
+          await _profiles
               .select('id')
               .eq('id', userId)
               .maybeSingle();
