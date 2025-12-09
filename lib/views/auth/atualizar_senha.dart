@@ -23,35 +23,51 @@ class _AtualizarSenhaState extends State<AtualizarSenha> {
 
   Future<void> _atualizarSenha(BuildContext context) async {
     try {
-      await AuthService.supabase().confirmPasswordRecoverToken(
-      token: _token.text,
-      email: widget.email,
-    );
+      if (_novaSenha.text != _confirmarSenha.text) {
+        showErrorDialog(
+          context,
+          title: "Erro ao mudar senha",
+          message: "As senhas não conferem",
+        );
+      } else {
+        await AuthService.supabase().confirmPasswordRecoverToken(
+          token: _token.text,
+          email: widget.email,
+        );
+        await AuthService.supabase().updateUser(senha: _novaSenha.text);
 
-    await AuthService.supabase().updateUser(senha: _novaSenha.text);
+        final usuario = AuthService.supabase().getUser;
+        if (usuario != null) {
+          // Usuário logado -> Home
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+        } else {
+          // Usuário deslogado -> Login
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+        }
+      }
     } catch (e) {
-      showErrorDialog(context, title: "Erro ao mudar senha", message: e.toString());
-    }
-    
-
-    final usuario = AuthService.supabase().getUser;
-    if (usuario != null) {
-      // Usuário logado -> Home
-      Navigator.of(
+      showErrorDialog(
         context,
-      ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
-    } else {
-      // Usuário deslogado -> Login
-      Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+        title: "Erro ao mudar senha",
+        message: e.toString(),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Atualizar Senha"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text(
+          "Atualizar Senha",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -65,7 +81,7 @@ class _AtualizarSenhaState extends State<AtualizarSenha> {
               ),
               const SizedBox(height: 8),
               const Text(
-                "Digite o token de 6 dígitos enviado ao seu e-mail, "
+                "Digite o código de 6 dígitos enviado ao seu e-mail, "
                 "crie uma nova senha e confirme abaixo.",
                 style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
@@ -78,7 +94,7 @@ class _AtualizarSenhaState extends State<AtualizarSenha> {
                 maxLength: 6,
                 decoration: InputDecoration(
                   counterText: "", // oculta o contador de caracteres
-                  labelText: "Token (6 dígitos)",
+                  labelText: "Código (6 dígitos)",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
