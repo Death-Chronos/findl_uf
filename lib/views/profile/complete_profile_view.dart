@@ -61,7 +61,10 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Complete seu perfil"),
+        title: const Text(
+          "Complete seu perfil",
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         backgroundColor: const Color(0xFF173C7B),
         automaticallyImplyLeading: false, // Remove botão voltar
@@ -94,6 +97,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
               controller: _nome,
               decoration: const InputDecoration(
                 labelText: "Nome completo",
+                prefixIcon: Icon(Icons.person),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -140,7 +144,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                     await ProfileService().createProfileWithPhotoURL(
                       userId: user.id,
                       nome: _nome.text,
-                      telefone: _telefone.text, 
+                      telefone: _telefone.text,
                       fotoUrl: fotoUrl,
                     );
 

@@ -1,7 +1,7 @@
 import 'package:find_uf/constants/route.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
-import 'package:find_uf/tools/validar_email.dart';
+import 'package:find_uf/tools/validacoes.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 
@@ -36,9 +36,19 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   bool _validarCampos() {
-    final erroEmail = ValidarEmail.validar(_email.text);
+    final erroEmail = Validacoes.validarEmail(_email.text);
     if (erroEmail != null) {
       _mostrarErro(erroEmail);
+      return false;
+    }
+    final erroDominio = Validacoes.validarDominioUfersa(_email.text);
+    if (erroDominio != null) {
+      showErrorDialog(
+        context,
+        title: "Erro com domínio do email",
+        message:
+            "O domínio do email deve pertercer a UFERSA. Exemplo: @ufersa.edu.br",
+      );
       return false;
     }
 
@@ -54,7 +64,7 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Criar conta"),
+        title: const Text("Criar conta", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF173C7B),
       ),

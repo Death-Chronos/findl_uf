@@ -15,10 +15,7 @@ class SupabaseAuthProvider extends AuthProvider {
     required String senha,
   }) async {
     try {
-      final response = await auth.signUp(
-        password: senha,
-        email: email,
-      );
+      final response = await auth.signUp(password: senha, email: email);
       if (response.user == null) {
         throw UserNotLoggedInAuthException();
       }
@@ -38,11 +35,10 @@ class SupabaseAuthProvider extends AuthProvider {
         case 'over_email_send_rate_limit':
           throw OverEmailSendRateLimitException();
         default:
-          print("Erro de autenticação: ${e.message}");
-          throw GenericAuthException();
+          throw GenericAuthException(e.message);
       }
     } catch (e) {
-      throw GenericAuthException();
+      throw GenericAuthException(e.toString());
     }
   }
 
@@ -77,10 +73,10 @@ class SupabaseAuthProvider extends AuthProvider {
           throw SessionExpiredAuthException();
 
         default:
-          throw GenericAuthException();
+          throw GenericAuthException(e.message);
       }
     } catch (e) {
-      throw GenericAuthException();
+      throw GenericAuthException(e.toString());
     }
   }
 

@@ -1,7 +1,7 @@
 import 'package:find_uf/constants/route.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
-import 'package:find_uf/tools/validar_email.dart';
+import 'package:find_uf/tools/validacoes.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,7 @@ class _ResetarSenhaViewState extends State<ResetarSenhaView> {
   late final TextEditingController _email;
 
   Future<void> _resetarSenha(BuildContext context) async {
-    final erro = ValidarEmail.validar(_email.text);
+    final erro = Validacoes.validarEmail(_email.text);
 
     if (erro != null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(erro)));
@@ -49,7 +49,7 @@ class _ResetarSenhaViewState extends State<ResetarSenhaView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Resetar Senha"),
+        title: Text("Resetar Senha", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF173C7B),
       ),

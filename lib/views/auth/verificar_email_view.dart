@@ -1,3 +1,4 @@
+import 'package:find_uf/constants/route.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
@@ -31,12 +32,15 @@ class VerificarEmailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Verificar e-mail"),
+        title: const Text("Verificar e-mail", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF173C7B),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed:
+              () => Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(loginRoute, (Route) => false),
         ),
       ),
       body: SafeArea(
@@ -70,7 +74,7 @@ class VerificarEmailView extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  "Verifique sua caixa de entrada (ou pasta de spam) e clique no link para ativar sua conta.",
+                  "Verifique sua caixa de entrada e SPAM e clique no link para ativar sua conta. Caso já tenha verificado, aperte na seta acima para ir para o login.",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 15, color: Colors.black54),
                 ),

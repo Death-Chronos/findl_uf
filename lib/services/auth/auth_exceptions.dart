@@ -51,9 +51,11 @@ class SamePasswordAuthException implements Exception {
 
 // Exceções genéricas
 class GenericAuthException implements Exception {
-  const GenericAuthException();
+  const GenericAuthException(this.message);
+
+  final String message;
   @override
-  String toString() => 'Ocorreu um erro inesperado.';
+  String toString() => 'Ocorreu um erro inesperado: ' + message;
 }
 
 class UserNotLoggedInAuthException implements Exception {
@@ -74,14 +76,15 @@ class NetworkAuthException implements Exception {
   String toString() => 'Erro de conexão. Verifique sua internet.';
 }
 
-class OverEmailSendRateLimitException implements Exception{
+class OverEmailSendRateLimitException implements Exception {
   const OverEmailSendRateLimitException();
   @override
   String toString() => 'Curto intervalo de requisição de envio de email.';
 }
 
-class EmailDomainNotAllowedException implements Exception{
+class EmailDomainNotAllowedException implements Exception {
   const EmailDomainNotAllowedException();
   @override
-  String toString() => 'Domínio de email não permitido. Por favor, use um email do domínio da UFERSA Ex: @ufersa.edu.br';
+  String toString() =>
+      'Domínio de email não permitido. Por favor, use um email do domínio da UFERSA Ex: @ufersa.edu.br';
 }

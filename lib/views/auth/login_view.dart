@@ -4,7 +4,7 @@ import 'package:find_uf/services/auth/auth_exceptions.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
-import 'package:find_uf/tools/validar_email.dart';
+import 'package:find_uf/tools/validacoes.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +31,7 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login"),
+        title: const Text("Login", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF173C7B),
       ),
@@ -49,6 +49,7 @@ class _LoginViewState extends State<LoginView> {
               controller: _email,
               decoration: InputDecoration(
                 labelText: "Email",
+                prefixIcon: Icon(Icons.email),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -61,6 +62,7 @@ class _LoginViewState extends State<LoginView> {
               decoration: InputDecoration(
                 labelText: "Senha",
                 border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock),
                 suffixIcon: IconButton(
                   onPressed: () {
                     setState(() {
@@ -97,7 +99,7 @@ class _LoginViewState extends State<LoginView> {
                     final email = _email.text;
                     final senha = _senha.text;
 
-                    final erro = ValidarEmail.validar(_email.text);
+                    final erro = Validacoes.validarEmail(_email.text);
 
                     if (erro != null) {
                       ScaffoldMessenger.of(
@@ -143,6 +145,7 @@ class _LoginViewState extends State<LoginView> {
                 ),
               ],
             ),
+            SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
