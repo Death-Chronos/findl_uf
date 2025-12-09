@@ -68,14 +68,8 @@ Future<bool> showActionDialog({
         title: Text(title),
         content: Text(message),
         actions: [
-          TextButton(
-            onPressed: () => onCancel(),
-            child: Text(cancelText),
-          ),
-          TextButton(
-            onPressed: () => onConfirm(),
-            child: Text(confirmText),
-          ),
+          TextButton(onPressed: () => onCancel(), child: Text(cancelText)),
+          TextButton(onPressed: () => onConfirm(), child: Text(confirmText)),
         ],
       );
     },
