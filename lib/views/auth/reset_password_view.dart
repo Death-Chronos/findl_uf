@@ -4,16 +4,16 @@ import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 
-class AtualizarSenha extends StatefulWidget {
+class ResetPasswordView extends StatefulWidget {
   final String? email;
 
-  const AtualizarSenha({super.key, this.email});
+  const ResetPasswordView({super.key, this.email});
 
   @override
-  State<AtualizarSenha> createState() => _AtualizarSenhaState();
+  State<ResetPasswordView> createState() => _ResetPasswordViewState();
 }
 
-class _AtualizarSenhaState extends State<AtualizarSenha> {
+class _ResetPasswordViewState extends State<ResetPasswordView> {
   final TextEditingController _token = TextEditingController();
   final TextEditingController _novaSenha = TextEditingController();
   final TextEditingController _confirmarSenha = TextEditingController();
@@ -67,6 +67,11 @@ class _AtualizarSenhaState extends State<AtualizarSenha> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

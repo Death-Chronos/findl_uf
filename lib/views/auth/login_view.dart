@@ -81,9 +81,8 @@ class _LoginViewState extends State<LoginView> {
                 Text("Esqueceu a sua senha?"),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      resetarSenhaRoute,
-                      (route) => false,
+                    Navigator.of(context).pushNamed(
+                      forgotPasswordRoute,
                     );
                   },
                   child: Text("Clique aqui"),
@@ -131,7 +130,7 @@ class _LoginViewState extends State<LoginView> {
                     } on EmailNotConfirmedAuthException {
                       Navigator.of(
                         context,
-                      ).pushNamed(verificarEmailRoute, arguments: email);
+                      ).pushNamed(verifyEmailRoute, arguments: email);
                     } catch (e) {
                       showErrorDialog(
                         context,
@@ -154,7 +153,7 @@ class _LoginViewState extends State<LoginView> {
                   onPressed: () {
                     Navigator.of(
                       context,
-                    ).pushNamedAndRemoveUntil(registroRoute, (route) => false);
+                    ).pushNamedAndRemoveUntil(registerRoute, (route) => false);
                   },
                   child: Text("Faça o registro."),
                 ),

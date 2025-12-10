@@ -1,9 +1,11 @@
 import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/services/auth/auth_service.dart';
+import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/services/supabase_config.dart';
-import 'package:find_uf/views/auth/atualizar_senha.dart';
+import 'package:find_uf/views/auth/reset_password_view.dart';
 import 'package:find_uf/views/auth/login_view.dart';
 import 'package:find_uf/views/auth/register_view.dart';
-import 'package:find_uf/views/auth/resetar_senha_view.dart';
+import 'package:find_uf/views/auth/forgot_password_view.dart';
 import 'package:find_uf/views/auth/verificar_email_view.dart';
 import 'package:find_uf/views/home.dart';
 import 'package:find_uf/views/profile/complete_profile_view.dart';
@@ -14,8 +16,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  /// Bloqueia a orientação para retrato
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseApiKey);
+  /// Inicializa o Supabase e permite login com tokens e etc
+  await Supabase.initialize(
+    url: supabaseUrl,
+    anonKey: supabaseApiKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -32,24 +42,26 @@ class MyApp extends StatelessWidget {
         switch (settings.name) {
           case loginRoute:
             return MaterialPageRoute(builder: (_) => LoginView());
-          case registroRoute:
+          case registerRoute:
             return MaterialPageRoute(builder: (_) => RegisterView());
           case homeRoute:
             return MaterialPageRoute(builder: (_) => HomePage());
-          case verificarEmailRoute:
+          case verifyEmailRoute:
             final email = settings.arguments as String;
             return MaterialPageRoute(
               builder: (_) => VerificarEmailView(email: email),
             );
-          case resetarSenhaRoute:
-            return MaterialPageRoute(builder: (_) => ResetarSenhaView());
-          case atualizarSenhaRoute:
+          case forgotPasswordRoute:
+            return MaterialPageRoute(builder: (_) => ForgotPasswordView());
+          case resetPasswordRoute:
             final email = settings.arguments as String;
             return MaterialPageRoute(
-              builder: (_) => AtualizarSenha(email: email),
+              builder: (_) => ResetPasswordView(email: email),
             );
           case completeProfileRoute:
-            return MaterialPageRoute(builder: (_) => const CompleteProfileView());
+            return MaterialPageRoute(
+              builder: (_) => const CompleteProfileView(),
+            );
           default:
             return MaterialPageRoute(builder: (_) => RegisterView());
         }
@@ -62,35 +74,50 @@ class MyApp extends StatelessWidget {
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 
-  // Método auxiliar que busca a sessão atual
-  Future<Session?> _checkSession() async {
-    final supabase = Supabase.instance.client;
-    return supabase.auth.currentSession;
+  /// Método auxiliar que verifica sessão atual e perfil do usuário
+Future<Map<String, dynamic>> _checkSessionAndProfile() async {
+  final supabase = Supabase.instance.client;
+  final session = supabase.auth.currentSession;
+  
+  if (session == null) {
+    return {'hasSession': false, 'hasProfile': false};
   }
+  
+  final userId = session.user.id;
+  final profileExists = await ProfileService().profileExists(userId);
+  
+  return {'hasSession': true, 'hasProfile': profileExists};
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Session?>(
-      // Verifica se existe uma sessão ativa do Supabase
-      future: _checkSession(),
-      builder: (context, snapshot) {
-        // Enquanto verifica, mostra um loading
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+@override
+Widget build(BuildContext context) {
+  return FutureBuilder<Map<String, dynamic>>(
+    future: _checkSessionAndProfile(),
+    builder: (context, snapshot) {
+      // Enquanto verifica, mostra um loading
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      }
 
-        // Quando terminar de verificar, decide a tela baseado na sessão
-        final session = snapshot.data;
-        
-        if (session != null) {
-          return HomePage();
-        } else {
-          // Sem sessão -> vai para login
-          return LoginView();
-        }
-      },
-    );
-  }
+      final data = snapshot.data ?? {'hasSession': false, 'hasProfile': false};
+      final hasSession = data['hasSession'] as bool;
+      final hasProfile = data['hasProfile'] as bool;
+
+      if (!hasSession) {
+        // Sem sessão -> login
+        return LoginView();
+      }
+
+      if (!hasProfile) {
+        // Tem sessão mas sem perfil -> completar perfil
+        return const CompleteProfileView();
+      }
+
+      // Tem sessão e perfil -> home
+      return HomePage();
+    },
+  );
+}
 }

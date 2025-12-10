@@ -15,7 +15,11 @@ class SupabaseAuthProvider extends AuthProvider {
     required String senha,
   }) async {
     try {
-      final response = await auth.signUp(password: senha, email: email);
+      final response = await auth.signUp(
+        password: senha,
+        email: email,
+        emailRedirectTo: "online.findluf://emailVerificationCallback",
+      );
       if (response.user == null) {
         throw UserNotLoggedInAuthException();
       }
@@ -112,7 +116,11 @@ class SupabaseAuthProvider extends AuthProvider {
 
   @override
   Future<void> sendEmailVerification({required email}) async {
-    await auth.resend(type: OtpType.signup, email: email);
+    await auth.resend(
+      type: OtpType.signup,
+      email: email,
+      emailRedirectTo: "online.findluf://emailVerificationCallback",
+    );
   }
 
   @override

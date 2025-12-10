@@ -32,11 +32,15 @@ class VerificarEmailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Verificar e-mail", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Verificar e-mail",
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         backgroundColor: const Color(0xFF173C7B),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
           onPressed:
               () => Navigator.of(
                 context,

@@ -5,14 +5,14 @@ import 'package:find_uf/tools/validacoes.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
 
-class ResetarSenhaView extends StatefulWidget {
-  const ResetarSenhaView({super.key});
+class ForgotPasswordView extends StatefulWidget {
+  const ForgotPasswordView({super.key});
 
   @override
-  _ResetarSenhaViewState createState() => _ResetarSenhaViewState();
+  _ForgotPasswordViewState createState() => _ForgotPasswordViewState();
 }
 
-class _ResetarSenhaViewState extends State<ResetarSenhaView> {
+class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   late final TextEditingController _email;
 
   Future<void> _resetarSenha(BuildContext context) async {
@@ -25,11 +25,9 @@ class _ResetarSenhaViewState extends State<ResetarSenhaView> {
 
     try {
       await AuthService.supabase().sendPasswordRecoverToken(email: _email.text);
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        atualizarSenhaRoute,
-        (route) => false,
-        arguments: _email.text.toString(),
-      );
+      Navigator.of(
+        context,
+      ).pushNamed(resetPasswordRoute, arguments: _email.text.toString());
     } catch (e) {
       showErrorDialog(
         context,
@@ -52,6 +50,10 @@ class _ResetarSenhaViewState extends State<ResetarSenhaView> {
         title: Text("Resetar Senha", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF173C7B),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       body: SafeArea(
         child: Center(
