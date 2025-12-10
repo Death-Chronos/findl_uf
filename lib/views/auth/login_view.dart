@@ -111,12 +111,12 @@ class _LoginViewState extends State<LoginView> {
                       final MyAuthUser user = await AuthService.supabase()
                           .login(email: email, senha: senha);
 
-                      print('user logged in: ${user.id}');
+                      debugPrint('user logged in: ${user.id}');
 
                       final userExist = await ProfileService().profileExists(
                         user.id,
                       );
-                      print('user profile exists: $userExist');
+                      debugPrint('user profile exists: $userExist');
                       if (userExist == false) {
                         Navigator.of(context).pushNamedAndRemoveUntil(
                           completeProfileRoute,

@@ -154,11 +154,25 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                     ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
                   } catch (e) {
                     _mostrarErro("Erro ao completar perfil: $e");
-                    print("Erro ao completar perfil: $e");
+                    debugPrint("Erro ao completar perfil: $e");
                   }
                 },
                 text: "Finalizar cadastro",
                 color: const Color(0xFF99C842),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Center(
+              child: TapButton(
+                onTap: () {
+                  AuthService.supabase().logout();
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    loginRoute,
+                    (route) => false,
+                  );
+                },
+                text: "Cancelar",
+                color: Colors.red,
               ),
             ),
           ],

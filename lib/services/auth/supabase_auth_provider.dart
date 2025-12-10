@@ -18,7 +18,7 @@ class SupabaseAuthProvider extends AuthProvider {
       final response = await auth.signUp(
         password: senha,
         email: email,
-        emailRedirectTo: "online.findluf://emailVerificationCallback",
+        emailRedirectTo: "online.findluf://callback/emailverification",
       );
       if (response.user == null) {
         throw UserNotLoggedInAuthException();
@@ -119,7 +119,7 @@ class SupabaseAuthProvider extends AuthProvider {
     await auth.resend(
       type: OtpType.signup,
       email: email,
-      emailRedirectTo: "online.findluf://emailVerificationCallback",
+      emailRedirectTo: "online.findluf://callback/emailverification",
     );
   }
 

@@ -20,7 +20,7 @@ class _HomeState extends State<HomePage> {
   void initState() {
     super.initState();
     final userId = AuthService.supabase().getUser!.id;
-    print('Fetching profile for userId: $userId');
+    debugPrint('Fetching profile for userId: $userId');
     _profileFuture = ProfileService().getProfile(userId);
   }
 
@@ -30,7 +30,7 @@ class _HomeState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home"),
+        title: const Text("Home", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: const Color(0xFF173C7B),
       ),
@@ -52,29 +52,28 @@ class _HomeState extends State<HomePage> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 16),
-                        TapButton(
-                          onTap: () {
-                            try {
-                              AuthService.supabase().logout();
+                      TapButton(
+                        onTap: () {
+                          try {
+                            AuthService.supabase().logout();
 
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                loginRoute,
-                                (route) => false,
-                              );
-                            } catch (e) {
-                              showErrorDialog(
-                                context,
-                                title: "Erro ao fazer logout",
-                                message: e.toString(),
-                              );
-                            }
-                          },
-                          text: "Deslogar",
-                          color: Color.fromARGB(255, 23, 60, 123),
-                        )
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              loginRoute,
+                              (route) => false,
+                            );
+                          } catch (e) {
+                            showErrorDialog(
+                              context,
+                              title: "Erro ao fazer logout",
+                              message: e.toString(),
+                            );
+                          }
+                        },
+                        text: "Deslogar",
+                        color: Color.fromARGB(255, 23, 60, 123),
+                      ),
                     ],
-                  )
-                  
+                  ),
                 );
               }
               final profile = snapshot.data as Profile;
@@ -87,9 +86,7 @@ class _HomeState extends State<HomePage> {
                       children: [
                         CircleAvatar(
                           radius: 80,
-                          backgroundImage: NetworkImage(
-                            profile.fotoUrl,
-                          ),
+                          backgroundImage: NetworkImage(profile.fotoUrl),
                         ),
                         SizedBox(height: 16),
                         Text(
