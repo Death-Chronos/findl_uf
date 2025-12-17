@@ -52,6 +52,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         backgroundColor: const Color(0xFF173C7B),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          color: Colors.white,
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),

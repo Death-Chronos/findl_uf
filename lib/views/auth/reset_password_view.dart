@@ -50,6 +50,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
         }
       }
     } catch (e) {
+      
       showErrorDialog(
         context,
         title: "Erro ao mudar senha",
@@ -65,7 +66,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
         title: const Text(
           "Atualizar Senha",
           style: TextStyle(color: Colors.white),
+          
         ),
+        backgroundColor: const Color(0xFF173C7B),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
