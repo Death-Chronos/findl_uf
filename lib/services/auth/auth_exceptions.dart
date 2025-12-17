@@ -88,3 +88,8 @@ class EmailDomainNotAllowedException implements Exception {
   String toString() =>
       'Domínio de email não permitido. Por favor, use um email do domínio da UFERSA Ex: @ufersa.edu.br';
 }
+class InvalidTokenAuthException implements Exception {
+  const InvalidTokenAuthException();
+  @override
+  String toString() => 'O código informado já foi usado, expirou ou é inválido, tente pedir um novo.';
+}

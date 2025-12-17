@@ -1,6 +1,7 @@
 // lib/auth/providers/auth_provider.dart
 
 import 'package:find_uf/services/auth/auth_exceptions.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_provider.dart';
 // ignore: unused_import
@@ -86,9 +87,21 @@ class SupabaseAuthProvider extends AuthProvider {
 
   @override
   Future<MyAuthUser> updateUser({String? email, String? senha}) async {
-    return await auth
-        .updateUser(UserAttributes(email: email, password: senha))
-        .then((response) => MyAuthUser.fromSupabase(response.user!));
+    try {
+      return await auth
+          .updateUser(UserAttributes(email: email, password: senha))
+          .then((response) => MyAuthUser.fromSupabase(response.user!));
+    } on AuthException catch (e) {
+      switch (e.code) {
+        case 'same_password':
+          throw SamePasswordAuthException();
+        default:
+          throw GenericAuthException(e.toString());
+      }
+    }
+    catch (e) {
+      throw GenericAuthException(e.toString());
+    }
   }
 
   @override
@@ -136,11 +149,26 @@ class SupabaseAuthProvider extends AuthProvider {
       email = user.email;
     }
 
-    return await auth.verifyOTP(
-      type: OtpType.recovery,
-      token: token,
-      email: email,
-    );
+    try {
+      return await auth.verifyOTP(
+        type: OtpType.recovery,
+        token: token,
+        email: email,
+      );
+    } on AuthException catch (e) {
+      debugPrint(e.code);
+      switch (e.code) {
+        case 'invalid_token':
+        case 'otp_expired':
+          throw InvalidTokenAuthException();
+        case 'user_not_found':
+          throw UserNotFoundAuthException();
+        default:
+          throw GenericAuthException(e.message);
+      }
+    } catch (e) {
+      throw GenericAuthException(e.toString());
+    }
   }
 
   @override

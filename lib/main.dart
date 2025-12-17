@@ -65,7 +65,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   void openAppLink(Uri uri) {
-    debugPrint('uri.path ${uri.path}');
     if (uri.path.contains('emailverification')) {
       debugPrint('Navigating to email verification callback route');
       _navigatorKey.currentState?.pushNamedAndRemoveUntil(
