@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 
-class VerificarEmailView extends StatelessWidget {
+class VerifyEmailView extends StatelessWidget {
   final String email;
 
-  const VerificarEmailView({super.key, required this.email});
+  const VerifyEmailView({super.key, required this.email});
 
   Future<void> _reenviarEmail(BuildContext context) async {
     try {
@@ -47,7 +47,7 @@ class VerificarEmailView extends StatelessWidget {
               ).pushNamedAndRemoveUntil(loginRoute, (Route) => false),
         ),
       ),
-      body: SafeArea(
+      body: SingleChildScrollView(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28),

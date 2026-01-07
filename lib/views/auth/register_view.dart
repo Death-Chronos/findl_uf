@@ -98,6 +98,7 @@ class _RegisterViewState extends State<RegisterView> {
               decoration: InputDecoration(
                 labelText: "Senha",
                 border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock),
                 suffixIcon: IconButton(
                   onPressed:
                       () => setState(() => _esconderSenha = !_esconderSenha),
