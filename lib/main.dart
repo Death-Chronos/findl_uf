@@ -8,7 +8,7 @@ import 'package:find_uf/views/auth/forgot_password_view.dart';
 import 'package:find_uf/views/auth/login_view.dart';
 import 'package:find_uf/views/auth/register_view.dart';
 import 'package:find_uf/views/auth/reset_password_view.dart';
-import 'package:find_uf/views/auth/verificar_email_view.dart';
+import 'package:find_uf/views/auth/verify_email_view.dart';
 import 'package:find_uf/views/home.dart';
 import 'package:find_uf/views/profile/complete_profile_view.dart';
 import 'package:flutter/material.dart';
@@ -58,14 +58,31 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initDeepLinks() async {
-    // Handle links
-    _linkSubscription = AppLinks().uriLinkStream.listen((uri) {
-      debugPrint('onAppLink: $uri');
+    final appLinks = AppLinks();
+
+    // Links quando app já está aberto (hot)
+    _linkSubscription = appLinks.uriLinkStream.listen((uri) {
+      debugPrint('Link recebido (app aberto): $uri');
+      openAppLink(uri);
     });
+
+    try {
+      //Links quando o app está fechado (cold)
+      final initialUri = await appLinks.getInitialLink();
+      if (initialUri != null) {
+        debugPrint('Link inicial (abriu o app): $initialUri');
+        // Aguarda navigator estar pronto
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          openAppLink(initialUri);
+        });
+      }
+    } catch (e) {
+      debugPrint('Erro ao obter link inicial: $e');
+    }
   }
 
   void openAppLink(Uri uri) {
-    if (uri.path.contains('emailverification')) {
+    if (uri.path.contains('verify-email')) {
       debugPrint('Navigating to email verification callback route');
       _navigatorKey.currentState?.pushNamedAndRemoveUntil(
         emailVerificationCallbackRoute,
@@ -92,7 +109,7 @@ class _MyAppState extends State<MyApp> {
           case verifyEmailRoute:
             final email = settings.arguments as String;
             return MaterialPageRoute(
-              builder: (_) => VerificarEmailView(email: email),
+              builder: (_) => VerifyEmailView(email: email),
             );
           case forgotPasswordRoute:
             return MaterialPageRoute(builder: (_) => ForgotPasswordView());
