@@ -7,6 +7,7 @@ import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/views/widgets/app_image_picker.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CompleteProfileView extends StatefulWidget {
   const CompleteProfileView({super.key});
@@ -106,10 +107,22 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
             TextField(
               controller: _telefone,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: "Número de telefone",
-                prefixIcon: Icon(Icons.phone),
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: "Número de Whatsapp",
+                hintText: "(99) 99999-9999",
+                border: const OutlineInputBorder(),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 8),
+                  child: Icon(
+                    FontAwesomeIcons.whatsapp,
+                    size: 20,
+                    color: Colors.green,
+                  ),
+                ),
+                prefixIconConstraints: const BoxConstraints(
+                  minWidth: 40,
+                  minHeight: 40,
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -166,10 +179,9 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
               child: TapButton(
                 onTap: () {
                   AuthService.supabase().logout();
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    loginRoute,
-                    (route) => false,
-                  );
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
                 },
                 text: "Cancelar",
                 color: Colors.red,
