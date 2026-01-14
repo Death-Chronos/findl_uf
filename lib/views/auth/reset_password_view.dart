@@ -3,6 +3,7 @@ import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ResetPasswordView extends StatefulWidget {
   final String? email;
@@ -21,36 +22,60 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   bool _esconderSenha = true;
   bool _esconderConfirmacao = true;
 
+  /// Função para atuaização de senha esquecida.
+  ///
+  /// Verifica os campos de texto das senhas e do token.
+  /// Verifica se já está logado, para os casos em que o usuário usou o Token e está autenticado,
+  /// mas devido a alguma Exception, não teve a senha alterada.
+  ///
+  /// Redireciona o usuário para a tela principal.
   Future<void> _atualizarSenha(BuildContext context) async {
     try {
+      if (_token.text.isEmpty || _token.text.length != 6) {
+        showErrorDialog(
+          context,
+          title: "Token inválido",
+          message: "O token deve ter 6 dígitos",
+        );
+        return;
+      }
+
+      if (_novaSenha.text.isEmpty || _novaSenha.text.length < 6) {
+        showErrorDialog(
+          context,
+          title: "Senha inválida",
+          message: "A senha deve ter no mínimo 6 caracteres",
+        );
+        return;
+      }
+
       if (_novaSenha.text != _confirmarSenha.text) {
         showErrorDialog(
           context,
           title: "Erro ao mudar senha",
           message: "As senhas não conferem",
         );
-      } else {
+        return;
+      }
+
+      // Verificar se já está logado ou precisa validar token
+      if (AuthService.supabase().getUser == null) {
         await AuthService.supabase().confirmPasswordRecoverToken(
           token: _token.text,
           email: widget.email,
         );
-        await AuthService.supabase().updateUser(senha: _novaSenha.text);
-
-        final usuario = AuthService.supabase().getUser;
-        if (usuario != null) {
-          // Usuário logado -> Home
-          Navigator.of(
-            context,
-          ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
-        } else {
-          // Usuário deslogado -> Login
-          Navigator.of(
-            context,
-          ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
-        }
       }
+
+      await AuthService.supabase().updateUser(senha: _novaSenha.text);
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Senha atualizada com sucesso!')));
+
+      Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
     } catch (e) {
-      
       showErrorDialog(
         context,
         title: "Erro ao mudar senha",
@@ -66,7 +91,6 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
         title: const Text(
           "Atualizar Senha",
           style: TextStyle(color: Colors.white),
-          
         ),
         backgroundColor: const Color(0xFF173C7B),
         centerTitle: true,
