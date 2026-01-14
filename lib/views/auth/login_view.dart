@@ -48,7 +48,7 @@ class _LoginViewState extends State<LoginView> {
             TextField(
               controller: _email,
               decoration: InputDecoration(
-                labelText: "Email",
+                labelText: "Email Institucional",
                 prefixIcon: Icon(Icons.email),
                 border: OutlineInputBorder(),
               ),

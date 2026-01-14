@@ -78,7 +78,7 @@ class VerifyEmailView extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  "Verifique sua caixa de entrada e SPAM e clique no link para ativar sua conta. Caso já tenha verificado, aperte na seta acima para ir para o login.",
+                  "Verifique sua caixa de entrada e SPAM e clique no link para ativar sua conta. Caso já tenha verificado, aperte na seta no canto superior esquerdo para ir para o login.",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 15, color: Colors.black54),
                 ),

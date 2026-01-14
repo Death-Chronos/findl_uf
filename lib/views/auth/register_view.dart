@@ -84,7 +84,7 @@ class _RegisterViewState extends State<RegisterView> {
               controller: _email,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
-                labelText: "Email",
+                labelText: "Email Institucional",
                 prefixIcon: Icon(Icons.email),
                 border: OutlineInputBorder(),
               ),

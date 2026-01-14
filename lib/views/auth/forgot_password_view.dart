@@ -68,6 +68,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   "Insira seu email abaixo para receber o código",
                   style: TextStyle(fontSize: 16),
                 ),
+                SizedBox(height: 8),
                 TextField(
                   controller: _email,
                   decoration: InputDecoration(
