@@ -10,7 +10,7 @@ import 'package:find_uf/views/auth/register_view.dart';
 import 'package:find_uf/views/auth/reset_password_view.dart';
 import 'package:find_uf/views/auth/verify_email_view.dart';
 import 'package:find_uf/views/home.dart';
-import 'package:find_uf/views/profile/complete_profile_view.dart';
+import 'package:find_uf/views/auth/complete_profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

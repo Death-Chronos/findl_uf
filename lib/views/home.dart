@@ -13,7 +13,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isSearching = false;
   String _searchQuery = '';
   String _selectedFilter = 'todos'; // 'todos', 'achados', 'perdidos'
-  
+
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -22,21 +22,19 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  ///Função para trocar de aba no BottomNavigationBar
+  ///Função para trocar de aba no NavigationBar
   void _onTabTapped(int index) {
     if (index == 2) {
       // Botão de criar reporte (+)
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => const CreateReportScreen(),
-        ),
+        MaterialPageRoute(builder: (context) => const CreateReportScreen()),
       );
       return;
     }
-    
+
     setState(() {
-      // Mapeia o índice do BottomNavigationBar para o índice real
+      // Mapeia o índice do NavigationBar para o índice real
       if (index > 2) {
         _currentIndex = index + 1;
       } else {
@@ -47,10 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
- ///Função para iniciar busca e modificar a tela
+  ///Função para iniciar busca e modificar a tela
   void _startSearch() {
     if (_searchController.text.trim().isEmpty) return;
-    
+
     setState(() {
       _searchQuery = _searchController.text;
       _isSearching = true;
@@ -72,16 +70,17 @@ class _HomeScreenState extends State<HomeScreen> {
     // Placeholder para filtros avançados
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Filtros'),
-        content: const Text('Opções de filtro virão aqui'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Fechar'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Filtros'),
+            content: const Text('Opções de filtro virão aqui'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Fechar'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -90,15 +89,15 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_isSearching) {
       return _buildSearchResults();
     }
-    
+
     switch (_currentIndex) {
       case 0:
         return const Center(child: Text('Home - Feed de itens'));
       case 1:
         return const Center(child: Text('Chats'));
-      case 3:
-        return const Center(child: Text('Meus Reportes'));
       case 4:
+        return const Center(child: Text('Meus Reportes'));
+      case 5:
         return const Center(child: Text('Perfil'));
       default:
         return const Center(child: Text('Home'));
@@ -115,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -124,29 +123,20 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(
             children: [
               Expanded(
-                child: _buildFilterButton(
-                  label: 'Todos',
-                  value: 'todos',
-                ),
+                child: _buildFilterButton(label: 'Todos', value: 'todos'),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _buildFilterButton(
-                  label: 'Achados',
-                  value: 'achados',
-                ),
+                child: _buildFilterButton(label: 'Achados', value: 'achados'),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _buildFilterButton(
-                  label: 'Perdidos',
-                  value: 'perdidos',
-                ),
+                child: _buildFilterButton(label: 'Perdidos', value: 'perdidos'),
               ),
             ],
           ),
         ),
-        
+
         // Resultados da busca
         Expanded(
           child: AnimatedSwitcher(
@@ -183,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildFilterButton({required String label, required String value}) {
     final isSelected = _selectedFilter == value;
-    
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       child: ElevatedButton(
@@ -205,10 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           padding: const EdgeInsets.symmetric(vertical: 12),
         ),
-        child: Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
+        child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
       ),
     );
   }
@@ -217,45 +204,44 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: _isSearching
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: _exitSearch,
-              )
-            : null,
+        leading:
+            _isSearching
+                ? IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: _exitSearch,
+                )
+                : null,
         title: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
-          child: _isSearching
-              ? Text(
-                  'Resultados: $_searchQuery',
-                  key: const ValueKey('search-results'),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                )
-              : _isSearchExpanded
+          child:
+              _isSearching
+                  ? Text(
+                    'Resultados: $_searchQuery',
+                    key: const ValueKey('search-results'),
+                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                  )
+                  : _isSearchExpanded
                   ? TextField(
-                      key: const ValueKey('search'),
-                      controller: _searchController,
-                      autofocus: true,
-                      onSubmitted: (_) => _startSearch(),
-                      decoration: const InputDecoration(
-                        hintText: 'Buscar itens...',
-                        hintStyle: TextStyle(color: Colors.white70),
-                        border: InputBorder.none,
-                      ),
-                      style: const TextStyle(fontSize: 16, color: Colors.white),
-                    )
-                  : const Text(
-                      'Findluf',
-                      key: ValueKey('title'),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    key: const ValueKey('search'),
+                    controller: _searchController,
+                    autofocus: true,
+                    onSubmitted: (_) => _startSearch(),
+                    decoration: const InputDecoration(
+                      hintText: 'Buscar itens...',
+                      hintStyle: TextStyle(color: Colors.white70),
+                      border: InputBorder.none,
                     ),
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
+                  )
+                  : const Text(
+                    'Findluf',
+                    key: ValueKey('title'),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
         ),
         backgroundColor: const Color(0xFF173C7B),
         actions: [
@@ -266,10 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           else
             IconButton(
-              icon: Icon(
-                _isSearchExpanded ? Icons.search : Icons.search,
-                color: Colors.white,
-              ),
+              icon: const Icon(Icons.search, color: Colors.white),
               onPressed: () {
                 if (_isSearchExpanded) {
                   _startSearch();
@@ -280,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
               },
             ),
-          if (_isSearchExpanded && !_isSearching)
+          if (_isSearchExpanded)
             IconButton(
               icon: const Icon(Icons.close, color: Colors.white),
               onPressed: () {
@@ -296,35 +279,57 @@ class _HomeScreenState extends State<HomeScreen> {
         duration: const Duration(milliseconds: 300),
         child: _getCurrentBody(),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex > 2 ? _currentIndex - 1 : _currentIndex,
-        onTap: _onTabTapped,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: Theme(
+        data: Theme.of(
+          context,
+        ).copyWith(iconTheme: const IconThemeData(color: Colors.white)),
+        child: NavigationBar(
+          selectedIndex: _currentIndex > 2 ? _currentIndex - 1 : _currentIndex,
+          onDestinationSelected: _onTabTapped,
+          backgroundColor: Colors.black,
+          indicatorColor: const Color(0xFF173C7B),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+
+          labelTextStyle: const WidgetStatePropertyAll(
+            TextStyle(color: Colors.white, fontSize: 12),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline),
-            label: 'Chats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 32),
-            label: 'Criar',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: 'Reportes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
+
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home_outlined, color: Colors.white70),
+              selectedIcon: Icon(Icons.home, color: Colors.white70),
+              label: 'Home',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.chat_bubble_outline, color: Colors.white70),
+              selectedIcon: Icon(Icons.chat_bubble, color: Colors.white70),
+              label: 'Chats',
+            ),
+            NavigationDestination(
+              icon: Icon(
+                Icons.add_circle_outline,
+                size: 32,
+                color: Colors.white70,
+              ),
+              selectedIcon: Icon(
+                Icons.add_circle,
+                size: 32,
+                color: Colors.white70,
+              ),
+              label: 'Criar',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.assignment_outlined, color: Colors.white70),
+              selectedIcon: Icon(Icons.assignment, color: Colors.white70),
+              label: 'Reportes',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.person_outline, color: Colors.white70),
+              selectedIcon: Icon(Icons.person, color: Colors.white70),
+              label: 'Perfil',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -337,12 +342,8 @@ class CreateReportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Criar Reporte'),
-      ),
-      body: const Center(
-        child: Text('Formulário de criação de reporte'),
-      ),
+      appBar: AppBar(title: const Text('Criar Reporte')),
+      body: const Center(child: Text('Formulário de criação de reporte')),
     );
   }
 }
