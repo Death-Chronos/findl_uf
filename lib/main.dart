@@ -95,7 +95,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FindlUF',
-      theme: ThemeData(),
+      theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle(
+            systemNavigationBarColor: Colors.black,
+            systemNavigationBarIconBrightness: Brightness.light,
+          ),
+        ),
+      ),
       navigatorKey: _navigatorKey,
       home: const AuthGate(),
       onGenerateRoute: (settings) {
@@ -105,7 +112,7 @@ class _MyAppState extends State<MyApp> {
           case registerRoute:
             return MaterialPageRoute(builder: (_) => RegisterView());
           case homeRoute:
-            return MaterialPageRoute(builder: (_) => HomePage());
+            return MaterialPageRoute(builder: (_) => HomeScreen());
           case verifyEmailRoute:
             final email = settings.arguments as String;
             return MaterialPageRoute(
@@ -179,7 +186,7 @@ class AuthGate extends StatelessWidget {
         }
 
         // Tem sessão e perfil -> home
-        return HomePage();
+        return HomeScreen();
       },
     );
   }

@@ -45,6 +45,7 @@ class _LoginViewState extends State<LoginView> {
               "Realize o login para acessar o aplicativo, ou entre como visitante.",
               style: TextStyle(fontSize: 14),
             ),
+            SizedBox(height: 8),
             TextField(
               controller: _email,
               decoration: InputDecoration(
@@ -81,9 +82,7 @@ class _LoginViewState extends State<LoginView> {
                 Text("Esqueceu a sua senha?"),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed(
-                      forgotPasswordRoute,
-                    );
+                    Navigator.of(context).pushNamed(forgotPasswordRoute);
                   },
                   child: Text("Clique aqui"),
                 ),
