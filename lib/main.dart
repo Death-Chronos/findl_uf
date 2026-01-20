@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/services/supabase_config.dart';
 import 'package:find_uf/views/auth/forgot_password_view.dart';
@@ -11,6 +11,7 @@ import 'package:find_uf/views/auth/reset_password_view.dart';
 import 'package:find_uf/views/auth/verify_email_view.dart';
 import 'package:find_uf/views/home.dart';
 import 'package:find_uf/views/auth/complete_profile_view.dart';
+import 'package:find_uf/views/profile/change_password_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -101,6 +102,7 @@ class _MyAppState extends State<MyApp> {
             systemNavigationBarColor: Colors.black,
             systemNavigationBarIconBrightness: Brightness.light,
           ),
+          backgroundColor: Color(0xFF173C7B)
         ),
       ),
       navigatorKey: _navigatorKey,
@@ -131,6 +133,11 @@ class _MyAppState extends State<MyApp> {
             );
           case emailVerificationCallbackRoute:
             return MaterialPageRoute(builder: (_) => CompleteProfileView());
+
+          case changePasswordRoute:
+            return MaterialPageRoute(
+              builder: (_) => const ChangePasswordView(),
+            );
           default:
             return MaterialPageRoute(builder: (_) => RegisterView());
         }

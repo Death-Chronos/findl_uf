@@ -1,50 +1,44 @@
-import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ResetPasswordView extends StatefulWidget {
-  final String? email;
-
-  const ResetPasswordView({super.key, this.email});
+class ChangePasswordView extends StatefulWidget {
+  const ChangePasswordView({super.key});
 
   @override
-  State<ResetPasswordView> createState() => _ResetPasswordViewState();
+  State<ChangePasswordView> createState() => _ChangePasswordViewState();
 }
 
-class _ResetPasswordViewState extends State<ResetPasswordView> {
-  final TextEditingController _token = TextEditingController();
+class _ChangePasswordViewState extends State<ChangePasswordView> {
+  final TextEditingController _senhaAtual = TextEditingController();
   final TextEditingController _novaSenha = TextEditingController();
   final TextEditingController _confirmarSenha = TextEditingController();
 
-  bool _esconderSenha = true;
+  bool _esconderSenhaAtual = true;
+  bool _esconderNovaSenha = true;
   bool _esconderConfirmacao = true;
 
-  /// Função para atuaização de senha esquecida.
+  /// Função para atualização de senha do usuário logado.
   ///
-  /// Verifica os campos de texto das senhas e do token.
-  /// Verifica se já está logado, para os casos em que o usuário usou o Token e está autenticado,
-  /// mas devido a alguma Exception, não teve a senha alterada.
-  ///
-  /// Redireciona o usuário para a tela principal.
-  Future<void> _atualizarSenha(BuildContext context) async {
+  /// TODO: Implementar lógica de validação e atualização
+  Future<void> _trocarSenha(BuildContext context) async {
     try {
-      if (_token.text.isEmpty || _token.text.length != 6) {
+      // Validações básicas
+      if (_senhaAtual.text.isEmpty) {
         showErrorDialog(
           context,
-          title: "Token inválido",
-          message: "O token deve ter 6 dígitos",
+          title: "Senha atual obrigatória",
+          message: "Por favor, informe sua senha atual",
         );
         return;
       }
 
-      if (_novaSenha.text.isEmpty || _novaSenha.text.length < 6) {
+      if (_novaSenha.text.length < 6) {
         showErrorDialog(
           context,
           title: "Senha inválida",
-          message: "A senha deve ter no mínimo 6 caracteres",
+          message: "A nova senha deve ter no mínimo 6 caracteres",
         );
         return;
       }
@@ -52,36 +46,44 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
       if (_novaSenha.text != _confirmarSenha.text) {
         showErrorDialog(
           context,
-          title: "Erro ao mudar senha",
+          title: "Erro ao trocar senha",
           message: "As senhas não conferem",
         );
         return;
       }
 
-      // Verificar se já está logado ou precisa validar token
-      if (AuthService.supabase().getUser == null) {
-        await AuthService.supabase().confirmPasswordRecoverToken(
-          token: _token.text,
-          email: widget.email,
+      if (_senhaAtual.text == _novaSenha.text) {
+        showErrorDialog(
+          context,
+          title: "Senha inválida",
+          message: "A nova senha deve ser diferente da senha atual",
         );
+        return;
       }
 
-      await AuthService.supabase().updateUser(senha: _novaSenha.text);
+      // TODO: Implementar lógica de troca de senha
+      // Precisamos discutir como validar senha atual e atualizar no Supabase
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Senha atualizada com sucesso!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Senha atualizada com sucesso!')),
+      );
 
-      Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+      Navigator.of(context).pop();
     } catch (e) {
       showErrorDialog(
         context,
-        title: "Erro ao mudar senha",
+        title: "Erro ao trocar senha",
         message: e.toString(),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _senhaAtual.dispose();
+    _novaSenha.dispose();
+    _confirmarSenha.dispose();
+    super.dispose();
   }
 
   @override
@@ -89,7 +91,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Atualizar Senha",
+          "Trocar Senha",
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
@@ -107,29 +109,37 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
             children: [
               // Cabeçalho
               const Text(
-                "Redefina sua senha",
+                "Altere sua senha",
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               const Text(
-                "Digite o código de 6 dígitos enviado ao seu e-mail, "
-                "crie uma nova senha e confirme abaixo.",
+                "Para sua segurança, informe sua senha atual e "
+                "depois crie uma nova senha.",
                 style: TextStyle(fontSize: 16, color: Colors.black54),
               ),
               const SizedBox(height: 36),
 
-              // Campo de token
+              // Senha atual
               TextField(
-                controller: _token,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
+                controller: _senhaAtual,
+                obscureText: _esconderSenhaAtual,
                 decoration: InputDecoration(
-                  counterText: "", // oculta o contador de caracteres
-                  labelText: "Código (6 dígitos)",
+                  labelText: "Senha atual",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  prefixIcon: const Icon(Icons.verified_user_outlined),
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _esconderSenhaAtual
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: () {
+                      setState(() => _esconderSenhaAtual = !_esconderSenhaAtual);
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -137,7 +147,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
               // Nova senha
               TextField(
                 controller: _novaSenha,
-                obscureText: _esconderSenha,
+                obscureText: _esconderNovaSenha,
                 decoration: InputDecoration(
                   labelText: "Nova senha",
                   border: OutlineInputBorder(
@@ -146,10 +156,12 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _esconderSenha ? Icons.visibility_off : Icons.visibility,
+                      _esconderNovaSenha
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
                     onPressed: () {
-                      setState(() => _esconderSenha = !_esconderSenha);
+                      setState(() => _esconderNovaSenha = !_esconderNovaSenha);
                     },
                   ),
                 ),
@@ -181,13 +193,14 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                 ),
               ),
               const SizedBox(height: 40),
+
               Center(
                 child: TapButton(
-                  text: "Atualizar Senha",
+                  text: "Confirmar Alteração",
                   onTap: () async {
-                    _atualizarSenha(context);
+                    await _trocarSenha(context);
                   },
-                  color: const Color(0xFF99C842),
+                  color: const Color(0xFF173C7B),
                 ),
               ),
             ],

@@ -1,4 +1,4 @@
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/tools/validacoes.dart';
@@ -66,7 +66,6 @@ class _RegisterViewState extends State<RegisterView> {
       appBar: AppBar(
         title: const Text("Criar conta", style: TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(

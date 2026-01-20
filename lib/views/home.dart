@@ -1,3 +1,4 @@
+import 'package:find_uf/views/profile/profile_view.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -98,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 4:
         return const Center(child: Text('Meus Reportes'));
       case 5:
-        return const Center(child: Text('Perfil'));
+        return const ProfileView();
       default:
         return const Center(child: Text('Home'));
     }
@@ -243,7 +244,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
         ),
-        backgroundColor: const Color(0xFF173C7B),
         actions: [
           if (_isSearching)
             IconButton(

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
@@ -33,6 +33,49 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
     _nome.dispose();
     _telefone.dispose();
     super.dispose();
+  }
+  Future<void> _completarPerfil() async {
+    {
+                  if (!_validarCampos()) return;
+
+                  try {
+                    final user = AuthService.supabase().getUser;
+                    if (user == null) {
+                      _mostrarErro("Usuário não autenticado");
+                      return;
+                    }
+                    String textoStatus = "...";
+
+                    // Cria perfil com foto
+                    setState(() {
+                      textoStatus = "Fazendo upload da foto de perfil...";
+                    });
+                    showLoadingDialog(context: context, message: textoStatus);
+                    final fotoUrl = await ProfileService().uploadProfilePhoto(
+                      userId: user.id,
+                      imageFile: imagemSelecionada!,
+                    );
+
+                    // criando perfil
+                    setState(() {
+                      textoStatus = "Criando perfil...";
+                    });
+                    await ProfileService().createProfileWithPhotoURL(
+                      userId: user.id,
+                      nome: _nome.text,
+                      telefone: _telefone.text,
+                      fotoUrl: fotoUrl,
+                    );
+
+                    // Navega para Home
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+                  } catch (e) {
+                    _mostrarErro("Erro ao completar perfil: $e");
+                    debugPrint("Erro ao completar perfil: $e");
+                  }
+                }
   }
 
   void _mostrarErro(String msg) {
@@ -67,7 +110,6 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
         automaticallyImplyLeading: false, // Remove botão voltar
       ),
       backgroundColor: Colors.white,
@@ -129,49 +171,9 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
 
             Center(
               child: TapButton(
-                onTap: () async {
-                  if (!_validarCampos()) return;
-
-                  try {
-                    final user = AuthService.supabase().getUser;
-                    if (user == null) {
-                      _mostrarErro("Usuário não autenticado");
-                      return;
-                    }
-                    String textoStatus = "...";
-
-                    // Cria perfil com foto
-                    setState(() {
-                      textoStatus = "Fazendo upload da foto de perfil...";
-                    });
-                    showLoadingDialog(context: context, message: textoStatus);
-                    final fotoUrl = await ProfileService().uploadProfilePhoto(
-                      userId: user.id,
-                      imageFile: imagemSelecionada!,
-                    );
-
-                    // criando perfil
-                    setState(() {
-                      textoStatus = "Criando perfil...";
-                    });
-                    await ProfileService().createProfileWithPhotoURL(
-                      userId: user.id,
-                      nome: _nome.text,
-                      telefone: _telefone.text,
-                      fotoUrl: fotoUrl,
-                    );
-
-                    // Navega para Home
-                    Navigator.of(
-                      context,
-                    ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
-                  } catch (e) {
-                    _mostrarErro("Erro ao completar perfil: $e");
-                    debugPrint("Erro ao completar perfil: $e");
-                  }
-                },
+                onTap: () => _completarPerfil(),
                 text: "Finalizar cadastro",
-                color: const Color(0xFF99C842),
+                color: const  Color(0xFF173C7B),
               ),
             ),
             const SizedBox(height: 16),

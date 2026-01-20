@@ -1,4 +1,4 @@
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/tools/validacoes.dart';
@@ -49,7 +49,6 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
       appBar: AppBar(
         title: Text("Resetar Senha", style: TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.white,

@@ -1,4 +1,4 @@
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
@@ -37,7 +37,6 @@ class VerifyEmailView extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.white,

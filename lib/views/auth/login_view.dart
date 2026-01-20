@@ -1,4 +1,4 @@
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/models/my_auth_user.dart';
 import 'package:find_uf/services/auth/auth_exceptions.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
@@ -33,7 +33,6 @@ class _LoginViewState extends State<LoginView> {
       appBar: AppBar(
         title: const Text("Login", style: TextStyle(color: Colors.white)),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
