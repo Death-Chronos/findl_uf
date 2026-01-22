@@ -97,6 +97,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'FindlUF',
       theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.green,
+      surface: Colors.white,
+    ),
         appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(
             systemNavigationBarColor: Colors.black,
@@ -146,11 +150,24 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// Widget que verifica o estado de autenticação e decide a rota inicial
-class AuthGate extends StatelessWidget {
+// Widget que verifica o estado de autenticação e decide a rota inicial (mudei para StatefulWidget, 
+// depois verificar se deu certo o problema de voltar para tela de completar perfil)
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
-  /// Método auxiliar que verifica sessão atual e perfil do usuário
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
+  late Future<Map<String, dynamic>> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _checkSessionAndProfile();
+  }
+
   Future<Map<String, dynamic>> _checkSessionAndProfile() async {
     final supabase = Supabase.instance.client;
     final session = supabase.auth.currentSession;
@@ -159,8 +176,8 @@ class AuthGate extends StatelessWidget {
       return {'hasSession': false, 'hasProfile': false};
     }
 
-    final userId = session.user.id;
-    final profileExists = await ProfileService().profileExists(userId);
+    final profileExists =
+        await ProfileService().profileExists(session.user.id);
 
     return {'hasSession': true, 'hasProfile': profileExists};
   }
@@ -168,9 +185,8 @@ class AuthGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>>(
-      future: _checkSessionAndProfile(),
+      future: _future,
       builder: (context, snapshot) {
-        // Enquanto verifica, mostra um loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
@@ -179,20 +195,9 @@ class AuthGate extends StatelessWidget {
 
         final data =
             snapshot.data ?? {'hasSession': false, 'hasProfile': false};
-        final hasSession = data['hasSession'] as bool;
-        final hasProfile = data['hasProfile'] as bool;
 
-        if (!hasSession) {
-          // Sem sessão -> login
-          return LoginView();
-        }
-
-        if (!hasProfile) {
-          // Tem sessão mas sem perfil -> completar perfil
-          return const CompleteProfileView();
-        }
-
-        // Tem sessão e perfil -> home
+        if (!data['hasSession']) return LoginView();
+        if (!data['hasProfile']) return const CompleteProfileView();
         return HomeScreen();
       },
     );
