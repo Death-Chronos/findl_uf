@@ -2,7 +2,7 @@
 class InvalidCredentialsAuthException implements Exception {
   const InvalidCredentialsAuthException();
   @override
-  String toString() => 'Email ou senha inválidos.';
+  String toString() => 'Email ou password inválidos.';
 }
 
 class EmailNotConfirmedAuthException implements Exception {
@@ -21,7 +21,7 @@ class TooManyRequestsAuthException implements Exception {
 class WeakPasswordAuthException implements Exception {
   const WeakPasswordAuthException();
   @override
-  String toString() => 'Senha fraca. Deve conter ao menos 6 caracteres.';
+  String toString() => 'password fraca. Deve conter ao menos 6 caracteres.';
 }
 
 class EmailAlreadyInUseAuthException implements Exception {
@@ -36,7 +36,7 @@ class InvalidEmailAuthException implements Exception {
   String toString() => 'Email inválido.';
 }
 
-// Exceções de recuperação de senha
+// Exceções de recuperação de password
 class UserNotFoundAuthException implements Exception {
   const UserNotFoundAuthException();
   @override
@@ -46,7 +46,7 @@ class UserNotFoundAuthException implements Exception {
 class SamePasswordAuthException implements Exception {
   const SamePasswordAuthException();
   @override
-  String toString() => 'A nova senha não pode ser igual à anterior.';
+  String toString() => 'A nova password não pode ser igual à anterior.';
 }
 
 // Exceções genéricas

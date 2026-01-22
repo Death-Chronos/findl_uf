@@ -13,8 +13,8 @@ class AuthService implements AuthProvider {
   }
 
   @override
-  Future<MyAuthUser> updateUser({String? email, String? senha}) {
-    return provider.updateUser(email: email, senha: senha);
+  Future<MyAuthUser> updateUser({String? email, String? password}) {
+    return provider.updateUser(email: email, password: password);
   }
 
   @override
@@ -31,8 +31,8 @@ class AuthService implements AuthProvider {
   MyAuthUser? get getUser => provider.getUser;
 
   @override
-  Future<MyAuthUser> login({required String email, required String senha}) {
-    return provider.login(email: email, senha: senha);
+  Future<MyAuthUser> login({required String email, required String password}) {
+    return provider.login(email: email, password: password);
   }
 
   @override
@@ -43,9 +43,9 @@ class AuthService implements AuthProvider {
   @override
   Future<void> registerUser({
     required String email,
-    required String senha,
+    required String password,
   }) {
-    return provider.registerUser(email: email, senha: senha);
+    return provider.registerUser(email: email, password: password);
   }
 
   @override
@@ -59,5 +59,10 @@ class AuthService implements AuthProvider {
   @override
   Future<void> sendPasswordRecoverToken({required String email}) {
     return provider.sendPasswordRecoverToken(email: email);
+  }
+  
+  @override
+  Future<String> updatePasswordWithCurrent({required String currentPassword, required String newPassword}) {
+    return provider.updatePasswordWithCurrent(currentPassword: currentPassword, newPassword: newPassword);
   }
 }

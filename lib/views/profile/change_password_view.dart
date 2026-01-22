@@ -21,7 +21,8 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
 
   /// Função para atualização de senha do usuário logado.
   ///
-  /// TODO: Implementar lógica de validação e atualização
+  /// Valida os campos, chama a função RPC do Supabase para verificar
+  /// a senha atual e atualizar para a nova senha.
   Future<void> _trocarSenha(BuildContext context) async {
     try {
       // Validações básicas
@@ -34,7 +35,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
         return;
       }
 
-      if (_novaSenha.text.length < 6) {
+      if (_novaSenha.text.isEmpty || _novaSenha.text.length < 6) {
         showErrorDialog(
           context,
           title: "Senha inválida",
@@ -61,14 +62,37 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
         return;
       }
 
-      // TODO: Implementar lógica de troca de senha
-      // Precisamos discutir como validar senha atual e atualizar no Supabase
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Senha atualizada com sucesso!')),
+      // Chama a função RPC para atualizar a senha
+      final response = await AuthService.supabase().updatePasswordWithCurrent(
+        currentPassword: _senhaAtual.text,
+        newPassword: _novaSenha.text,
       );
 
-      Navigator.of(context).pop();
+      // Verifica o resultado da função
+      if (response == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Senha atualizada com sucesso!')),
+        );
+        Navigator.of(context).pop();
+      } else if (response == 'incorrect') {
+        showErrorDialog(
+          context,
+          title: "Senha incorreta",
+          message: "A senha atual informada está incorreta",
+        );
+      } else if (response == 'unauthorized') {
+        showErrorDialog(
+          context,
+          title: "Não autorizado",
+          message: "Você precisa estar logado para trocar a senha",
+        );
+      } else {
+        showErrorDialog(
+          context,
+          title: "Erro desconhecido",
+          message: "Ocorreu um erro ao trocar a senha. Tente novamente.",
+        );
+      }
     } catch (e) {
       showErrorDialog(
         context,
@@ -100,6 +124,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
           color: Colors.white,
           onPressed: () => Navigator.of(context).pop(),
         ),
+        backgroundColor: const Color(0xFF173C7B),
       ),
       body: SafeArea(
         child: SingleChildScrollView(

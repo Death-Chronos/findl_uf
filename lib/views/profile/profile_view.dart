@@ -4,6 +4,7 @@ import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/tools/formatacoes.dart';
+import 'package:find_uf/views/profile/update_profile_view.dart';
 import 'package:flutter/material.dart';
 
 class ProfileView extends StatefulWidget {
@@ -117,7 +118,18 @@ class _ProfileViewState extends State<ProfileView> {
                     icon: Icons.person_outline,
                     title: 'Atualizar perfil',
                     onTap: () {
-                      // TODO: Navegar para tela de atualizar perfil
+                      final foiAtualizado = Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => UpdateProfileView(),
+                        ),
+                      );
+                      if (foiAtualizado  == true) {
+                        setState(() {
+                          _profileFuture = ProfileService().getProfile(
+                            AuthService.supabase().getUser!.id,
+                          );
+                        });
+                      }
                       debugPrint('Atualizar perfil');
                     },
                   ),

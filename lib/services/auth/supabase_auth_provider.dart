@@ -9,15 +9,16 @@ import '../../models/my_auth_user.dart';
 
 class SupabaseAuthProvider extends AuthProvider {
   final auth = Supabase.instance.client.auth;
+  final rpc = Supabase.instance.client.rpc;
 
   @override
   Future<void> registerUser({
     required String email,
-    required String senha,
+    required String password,
   }) async {
     try {
       final response = await auth.signUp(
-        password: senha,
+        password: password,
         email: email,
         emailRedirectTo: "https://findluf.online/verify-email",
       );
@@ -50,10 +51,10 @@ class SupabaseAuthProvider extends AuthProvider {
   @override
   Future<MyAuthUser> login({
     required String email,
-    required String senha,
+    required String password,
   }) async {
     try {
-      await auth.signInWithPassword(password: senha, email: email);
+      await auth.signInWithPassword(password: password, email: email);
       final user = getUser;
 
       if (user != null) {
@@ -86,10 +87,10 @@ class SupabaseAuthProvider extends AuthProvider {
   }
 
   @override
-  Future<MyAuthUser> updateUser({String? email, String? senha}) async {
+  Future<MyAuthUser> updateUser({String? email, String? password}) async {
     try {
       return await auth
-          .updateUser(UserAttributes(email: email, password: senha))
+          .updateUser(UserAttributes(email: email, password: password))
           .then((response) => MyAuthUser.fromSupabase(response.user!));
     } on AuthException catch (e) {
       switch (e.code) {
@@ -175,4 +176,31 @@ class SupabaseAuthProvider extends AuthProvider {
   Future<void> sendPasswordRecoverToken({required String email}) async {
     return await auth.resetPasswordForEmail(email);
   }
+  
+  @override
+Future<String> updatePasswordWithCurrent({
+  required String currentPassword,
+  required String newPassword,
+}) async {
+  try {
+    // Chama a função RPC do Supabase
+    final response = await rpc(
+      'update_password',
+      params: {
+        'current_plain_password': currentPassword,
+        'new_plain_password': newPassword,
+      },
+    );
+
+    // Retorna o resultado da função ('success', 'incorrect' ou 'unauthorized')
+    return response as String;
+  } on PostgrestException catch (e) {
+    // Erro ao chamar a função RPC
+    debugPrint('PostgrestException: ${e.message}');
+    throw GenericAuthException('Erro ao atualizar senha: ${e.message}');
+  } catch (e) {
+    debugPrint('Erro desconhecido: $e');
+    throw GenericAuthException('Erro inesperado ao atualizar senha');
+  }
+}
 }

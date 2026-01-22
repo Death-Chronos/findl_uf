@@ -94,7 +94,7 @@ class _LoginViewState extends State<LoginView> {
                 TapButton(
                   onTap: () async {
                     final email = _email.text;
-                    final senha = _senha.text;
+                    final password = _senha.text;
 
                     final erro = Validacoes.validarEmail(_email.text);
 
@@ -107,7 +107,7 @@ class _LoginViewState extends State<LoginView> {
 
                     try {
                       final MyAuthUser user = await AuthService.supabase()
-                          .login(email: email, senha: senha);
+                          .login(email: email, password: password);
 
                       debugPrint('user logged in: ${user.id}');
 

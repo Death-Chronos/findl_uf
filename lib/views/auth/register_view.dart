@@ -14,20 +14,20 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
-  late final TextEditingController _senha;
+  late final TextEditingController _password;
   bool _esconderSenha = true;
 
   @override
   void initState() {
     _email = TextEditingController();
-    _senha = TextEditingController();
+    _password = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
     _email.dispose();
-    _senha.dispose();
+    _password.dispose();
     super.dispose();
   }
 
@@ -52,7 +52,7 @@ class _RegisterViewState extends State<RegisterView> {
       return false;
     }
 
-    if (_senha.text.length < 6) {
+    if (_password.text.length < 6) {
       _mostrarErro("A senha deve ter pelo menos 6 caracteres.");
       return false;
     }
@@ -91,7 +91,7 @@ class _RegisterViewState extends State<RegisterView> {
             const SizedBox(height: 16),
 
             TextField(
-              controller: _senha,
+              controller: _password,
               autocorrect: false,
               obscureText: _esconderSenha,
               decoration: InputDecoration(
@@ -118,7 +118,7 @@ class _RegisterViewState extends State<RegisterView> {
                     // Registra o usuário
                     await AuthService.supabase().registerUser(
                       email: _email.text,
-                      senha: _senha.text,
+                      password: _password.text,
                     );
 
                     Navigator.of(context).pushNamedAndRemoveUntil(

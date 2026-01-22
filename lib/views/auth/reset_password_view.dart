@@ -66,7 +66,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
         );
       }
 
-      await AuthService.supabase().updateUser(senha: _novaSenha.text);
+      await AuthService.supabase().updateUser(password: _novaSenha.text);
 
       ScaffoldMessenger.of(
         context,

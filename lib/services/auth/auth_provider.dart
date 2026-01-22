@@ -5,16 +5,21 @@ abstract class AuthProvider {
   /// Registra um novo usuário
   Future<void> registerUser({
     required String email,
-    required String senha,
+    required String password,
   });
 
   /// Realiza login do usuário
-  Future<MyAuthUser> login({required String email, required String senha});
+  Future<MyAuthUser> login({required String email, required String password});
 
   /// Faz logout do usuário atual
   Future<void> logout();
 
-  /// Envia email com token para resetar senha
+  Future<String> updatePasswordWithCurrent({
+    required String currentPassword,
+    required String newPassword,
+  });
+
+  /// Envia email com token para resetar password
   Future<void> sendPasswordRecoverToken({required String email});
 
   /// Confirma o token
@@ -30,7 +35,7 @@ abstract class AuthProvider {
   MyAuthUser? get getUser;
 
   /// Atualiza dados do usuário
-  Future<MyAuthUser> updateUser({String? email, String? senha});
+  Future<MyAuthUser> updateUser({String? email, String? password});
 
   /// Deleta conta do usuário
   Future<void> deleteAccount();

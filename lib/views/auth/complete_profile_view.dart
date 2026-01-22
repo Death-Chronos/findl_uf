@@ -34,48 +34,49 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
     _telefone.dispose();
     super.dispose();
   }
+
   Future<void> _completarPerfil() async {
     {
-                  if (!_validarCampos()) return;
+      if (!_validarCampos()) return;
 
-                  try {
-                    final user = AuthService.supabase().getUser;
-                    if (user == null) {
-                      _mostrarErro("Usuário não autenticado");
-                      return;
-                    }
-                    String textoStatus = "...";
+      try {
+        final user = AuthService.supabase().getUser;
+        if (user == null) {
+          _mostrarErro("Usuário não autenticado");
+          return;
+        }
+        String textoStatus = "...";
 
-                    // Cria perfil com foto
-                    setState(() {
-                      textoStatus = "Fazendo upload da foto de perfil...";
-                    });
-                    showLoadingDialog(context: context, message: textoStatus);
-                    final fotoUrl = await ProfileService().uploadProfilePhoto(
-                      userId: user.id,
-                      imageFile: imagemSelecionada!,
-                    );
+        // Cria perfil com foto
+        setState(() {
+          textoStatus = "Fazendo upload da foto de perfil...";
+        });
+        showLoadingDialog(context: context, message: textoStatus);
+        final fotoUrl = await ProfileService().uploadProfilePhoto(
+          userId: user.id,
+          imageFile: imagemSelecionada!,
+        );
 
-                    // criando perfil
-                    setState(() {
-                      textoStatus = "Criando perfil...";
-                    });
-                    await ProfileService().createProfileWithPhotoURL(
-                      userId: user.id,
-                      nome: _nome.text,
-                      telefone: _telefone.text,
-                      fotoUrl: fotoUrl,
-                    );
+        // criando perfil
+        setState(() {
+          textoStatus = "Criando perfil...";
+        });
+        await ProfileService().createProfileWithPhotoURL(
+          userId: user.id,
+          nome: _nome.text,
+          telefone: _telefone.text,
+          fotoUrl: fotoUrl,
+        );
 
-                    // Navega para Home
-                    Navigator.of(
-                      context,
-                    ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
-                  } catch (e) {
-                    _mostrarErro("Erro ao completar perfil: $e");
-                    debugPrint("Erro ao completar perfil: $e");
-                  }
-                }
+        // Navega para Home
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+      } catch (e) {
+        _mostrarErro("Erro ao completar perfil: $e");
+        debugPrint("Erro ao completar perfil: $e");
+      }
+    }
   }
 
   void _mostrarErro(String msg) {
@@ -173,7 +174,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
               child: TapButton(
                 onTap: () => _completarPerfil(),
                 text: "Finalizar cadastro",
-                color: const  Color(0xFF173C7B),
+                color: const Color(0xFF173C7B),
               ),
             ),
             const SizedBox(height: 16),
