@@ -117,20 +117,23 @@ class _ProfileViewState extends State<ProfileView> {
                   _buildMenuItem(
                     icon: Icons.person_outline,
                     title: 'Atualizar perfil',
-                    onTap: () {
-                      final foiAtualizado = Navigator.of(context).push(
+                    onTap: () async {
+                      final foiAtualizado = await Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => UpdateProfileView(),
+                          builder: (_) => const UpdateProfileView(),
                         ),
                       );
-                      if (foiAtualizado  == true) {
+
+                      if (foiAtualizado == true) {
                         setState(() {
                           _profileFuture = ProfileService().getProfile(
                             AuthService.supabase().getUser!.id,
                           );
                         });
                       }
-                      debugPrint('Atualizar perfil');
+                      debugPrint(
+                        'Perfil ${foiAtualizado == true ? "atualizado" : "não atualizado"}',
+                      );
                     },
                   ),
                   _buildMenuItem(
@@ -191,5 +194,4 @@ class _ProfileViewState extends State<ProfileView> {
       ),
     );
   }
-
 }
