@@ -106,10 +106,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Complete seu perfil",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Complete seu perfil"),
         centerTitle: true,
         automaticallyImplyLeading: false, // Remove botão voltar
       ),

@@ -1,11 +1,14 @@
 const loginRoute = "/login/";
-const registerRoute = "/registro/";
-const verifyEmailRoute = "/verificarEmail/";
-const forgotPasswordRoute = "/resetarSenha/";
-const resetPasswordRoute = "/atualizarSenha/";
+const registerRoute = "/register/";
+const verifyEmailRoute = "/verifyEmail/";
+const forgotPasswordRoute = "/resetPassword/";
+const resetPasswordRoute = "/updatePassword/";
 const completeProfileRoute = '/completeProfile';
 const emailVerificationCallbackRoute = "/emailVerificationCallback";
 
 const homeRoute = "/home/";
 
 const changePasswordRoute = "/profile/changePassword/";
+
+const createLostAndFoundItemRoute = "/createItemReport/";
+const lostAndFindItemRoute = "/viewItemReport/";

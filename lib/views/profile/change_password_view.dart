@@ -116,7 +116,6 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
       appBar: AppBar(
         title: const Text(
           "Trocar Senha",
-          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         leading: IconButton(

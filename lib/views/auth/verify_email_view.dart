@@ -34,7 +34,6 @@ class VerifyEmailView extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           "Verificar e-mail",
-          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         leading: IconButton(

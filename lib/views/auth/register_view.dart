@@ -64,7 +64,7 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Criar conta", style: TextStyle(color: Colors.white)),
+        title: const Text("Criar conta"),
         centerTitle: true,
       ),
       backgroundColor: Colors.white,

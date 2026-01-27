@@ -3,7 +3,6 @@ import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/views/widgets/tap_button.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ResetPasswordView extends StatefulWidget {
   final String? email;
@@ -90,7 +89,6 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
       appBar: AppBar(
         title: const Text(
           "Atualizar Senha",
-          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         leading: IconButton(

@@ -55,7 +55,7 @@ class GenericAuthException implements Exception {
 
   final String message;
   @override
-  String toString() => 'Ocorreu um erro inesperado: ' + message;
+  String toString() => 'Ocorreu um erro inesperado: $message';
 }
 
 class UserNotLoggedInAuthException implements Exception {

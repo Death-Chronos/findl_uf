@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:find_uf/models/profile.dart';
+import 'package:path/path.dart' as path;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileService {
@@ -29,7 +30,9 @@ class ProfileService {
     required File imageFile,
   }) async {
     try {
-      final String nomeArquivo = '$userId.jpg';
+      final extension = path.extension(imageFile.path).toLowerCase();
+
+      final String nomeArquivo = '$userId$extension';
 
       await _photoStorage.upload(
         nomeArquivo,

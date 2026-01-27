@@ -133,7 +133,6 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
       appBar: AppBar(
         title: const Text(
           "Atualizar Perfil",
-          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         leading: IconButton(

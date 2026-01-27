@@ -47,7 +47,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Resetar Senha", style: TextStyle(color: Colors.white)),
+        title: Text("Resetar Senha"),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

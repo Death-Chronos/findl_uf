@@ -11,9 +11,11 @@ import 'package:find_uf/views/auth/reset_password_view.dart';
 import 'package:find_uf/views/auth/verify_email_view.dart';
 import 'package:find_uf/views/home.dart';
 import 'package:find_uf/views/auth/complete_profile_view.dart';
+import 'package:find_uf/views/items/create_lost_and_found_item_view.dart';
 import 'package:find_uf/views/profile/change_password_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -98,18 +100,32 @@ class _MyAppState extends State<MyApp> {
       title: 'FindlUF',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-      seedColor: Colors.green,
-      surface: Colors.white,
-    ),
+          seedColor: Colors.green,
+          surface: Colors.white,
+        ),
         appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(
             systemNavigationBarColor: Colors.black,
             systemNavigationBarIconBrightness: Brightness.light,
           ),
-          backgroundColor: Color(0xFF173C7B)
+          backgroundColor: Color(0xFF173C7B),
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       navigatorKey: _navigatorKey,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt', 'BR'), // Português Brasil
+      ],
+      locale: const Locale('pt', 'BR'),
       home: const AuthGate(),
       onGenerateRoute: (settings) {
         switch (settings.name) {
@@ -142,6 +158,11 @@ class _MyAppState extends State<MyApp> {
             return MaterialPageRoute(
               builder: (_) => const ChangePasswordView(),
             );
+
+          case createLostAndFoundItemRoute:
+            return MaterialPageRoute(
+              builder: (_) => const CreateLostAndFoundItemView(),
+            );
           default:
             return MaterialPageRoute(builder: (_) => RegisterView());
         }
@@ -150,7 +171,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// Widget que verifica o estado de autenticação e decide a rota inicial (mudei para StatefulWidget, 
+// Widget que verifica o estado de autenticação e decide a rota inicial (mudei para StatefulWidget,
 // depois verificar se deu certo o problema de voltar para tela de completar perfil)
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
@@ -176,8 +197,7 @@ class _AuthGateState extends State<AuthGate> {
       return {'hasSession': false, 'hasProfile': false};
     }
 
-    final profileExists =
-        await ProfileService().profileExists(session.user.id);
+    final profileExists = await ProfileService().profileExists(session.user.id);
 
     return {'hasSession': true, 'hasProfile': profileExists};
   }
