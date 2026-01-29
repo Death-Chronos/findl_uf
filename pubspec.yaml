@@ -35,12 +35,16 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
-  supabase_flutter: ^2.9.1
-  image_picker: ^1.0.4
-  app_links: ^6.4.1
-  font_awesome_flutter: ^10.9.1
-  path: ^1.9.1
+
+  cupertino_icons: ^1.0.8 # Não sei, já estava aqui, parece icons do IOS
+  supabase_flutter: ^2.9.1 # Para backend e autenticação
+  image_picker: ^1.0.4 # Para selecionar imagens da galeria ou tirar fotos
+  app_links: ^6.4.1 # Para deep links
+  font_awesome_flutter: ^10.9.1 # Ícones adicionais
+  path: ^1.9.1 # Para manipulação de caminhos de arquivos
+  url_launcher: ^6.3.1 # Para abrir WhatsApp
+  cached_network_image: ^3.4.1 # Para cache de imagens
+  photo_view: ^0.15.0 # Para zoom nas fotos
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,6 @@
 import 'package:find_uf/models/enums/item_status.dart';
 import 'package:find_uf/models/lost_and_find_item.dart';
-import 'package:find_uf/views/items/items_grid_view.dart';
+import 'package:find_uf/views/items/components/items_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

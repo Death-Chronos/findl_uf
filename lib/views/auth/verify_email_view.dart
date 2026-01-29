@@ -1,7 +1,7 @@
 import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:flutter/material.dart';
-import 'package:find_uf/views/widgets/tap_button.dart';
+import 'package:find_uf/views/components/tap_button.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 
 class VerifyEmailView extends StatelessWidget {

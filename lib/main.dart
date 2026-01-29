@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:find_uf/constants/routes.dart';
+import 'package:find_uf/models/lost_and_find_item.dart';
 import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/services/supabase_config.dart';
 import 'package:find_uf/views/auth/forgot_password_view.dart';
@@ -9,9 +10,10 @@ import 'package:find_uf/views/auth/login_view.dart';
 import 'package:find_uf/views/auth/register_view.dart';
 import 'package:find_uf/views/auth/reset_password_view.dart';
 import 'package:find_uf/views/auth/verify_email_view.dart';
-import 'package:find_uf/views/home.dart';
+import 'package:find_uf/views/home_view.dart';
 import 'package:find_uf/views/auth/complete_profile_view.dart';
 import 'package:find_uf/views/items/create_lost_and_found_item_view.dart';
+import 'package:find_uf/views/items/item_detail_view.dart';
 import 'package:find_uf/views/profile/change_password_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -134,7 +136,7 @@ class _MyAppState extends State<MyApp> {
           case registerRoute:
             return MaterialPageRoute(builder: (_) => RegisterView());
           case homeRoute:
-            return MaterialPageRoute(builder: (_) => HomeScreen());
+            return MaterialPageRoute(builder: (_) => HomeView());
           case verifyEmailRoute:
             final email = settings.arguments as String;
             return MaterialPageRoute(
@@ -163,6 +165,11 @@ class _MyAppState extends State<MyApp> {
             return MaterialPageRoute(
               builder: (_) => const CreateLostAndFoundItemView(),
             );
+          case itemDetailsRoute:
+            final item = settings.arguments as LostAndFoundItem;
+            return MaterialPageRoute(
+              builder: (_) => ItemDetailsView(item: item),
+            );  
           default:
             return MaterialPageRoute(builder: (_) => RegisterView());
         }
@@ -218,7 +225,7 @@ class _AuthGateState extends State<AuthGate> {
 
         if (!data['hasSession']) return LoginView();
         if (!data['hasProfile']) return const CompleteProfileView();
-        return HomeScreen();
+        return HomeView();
       },
     );
   }

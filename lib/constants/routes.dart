@@ -12,3 +12,4 @@ const changePasswordRoute = "/profile/changePassword/";
 
 const createLostAndFoundItemRoute = "/createItemReport/";
 const lostAndFindItemRoute = "/viewItemReport/";
+const itemDetailsRoute = "/itemDetails/";

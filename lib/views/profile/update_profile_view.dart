@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
-import 'package:find_uf/views/widgets/app_image_picker.dart';
-import 'package:find_uf/views/widgets/tap_button.dart';
+import 'package:find_uf/views/components/app_image_picker.dart';
+import 'package:find_uf/views/components/tap_button.dart';
 import 'package:flutter/material.dart';
 
 class UpdateProfileView extends StatefulWidget {

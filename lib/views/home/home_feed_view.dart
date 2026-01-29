@@ -1,7 +1,7 @@
 import 'package:find_uf/models/lost_and_find_item.dart';
-import 'package:find_uf/views/items/items_grid_view.dart';
+import 'package:find_uf/services/items/lost_and_found_item_service.dart';
+import 'package:find_uf/views/items/components/items_grid.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomeFeedView extends StatefulWidget {
   const HomeFeedView({super.key});
@@ -11,7 +11,6 @@ class HomeFeedView extends StatefulWidget {
 }
 
 class _HomeFeedViewState extends State<HomeFeedView> {
-  final _supabase = Supabase.instance.client;
   List<LostAndFoundItem> _items = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -29,14 +28,9 @@ class _HomeFeedViewState extends State<HomeFeedView> {
     });
 
     try {
-      final response = await _supabase
-          .from('lost_and_found_items')
-          .select()
-          .order('created_at', ascending: false);
+      
 
-      final items = (response as List)
-          .map((json) => LostAndFoundItem.fromJson(json))
-          .toList();
+      final items = await LostAndFoundItemService().getActiveItems();
 
       setState(() {
         _items = items;
