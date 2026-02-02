@@ -1,2 +1,0 @@
-const supabaseUrl = "https://xdacahloaccrpykhexph.supabase.co";
-const supabaseApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkYWNhaGxvYWNjcnB5a2hleHBoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0NjUyMDcsImV4cCI6MjA3MzA0MTIwN30.jjIRhI58RaSFYrbN1Yc9laap6n98b_BU9G8TmVgcUZc";
