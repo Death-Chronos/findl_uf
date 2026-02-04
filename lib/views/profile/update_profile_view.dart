@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:find_uf/models/my_auth_user.dart';
+import 'package:find_uf/models/profile.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
@@ -21,6 +23,8 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
   String? _currentPhotoUrl;
   bool _isLoading = true;
   bool _isSaving = false;
+  late MyAuthUser _currentUser;
+  late Profile _currentProfile;
 
   @override
   void initState() {
@@ -30,10 +34,12 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
 
   Future<void> _loadCurrentData() async {
     try {
-      final userId = AuthService.supabase().getUser!.id;
-      final profile = await ProfileService().getProfile(userId);
+      final user = await AuthService.supabase().getUser;
+      final profile = await ProfileService().getProfile(user!.id);
 
       setState(() {
+        _currentUser = user;
+        _currentProfile = profile;
         _nameController.text = profile.nome;
         _phoneController.text = profile.telefone;
         _currentPhotoUrl = profile.fotoUrl;
@@ -73,12 +79,10 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
       return;
     }
 
-    final currentProfile = await ProfileService().getProfile(
-      AuthService.supabase().getUser!.id,
-    );
+    
 
-    final bool nameChanged = name != currentProfile.nome;
-    final bool phoneChanged = phone != currentProfile.telefone;
+    final bool nameChanged = name != _currentProfile.nome;
+    final bool phoneChanged = phone != _currentProfile.telefone;
     final bool photoChanged = _selectedImage != null;
 
     if (!nameChanged && !phoneChanged && !photoChanged) {
@@ -93,10 +97,9 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
     setState(() => _isSaving = true);
 
     try {
-      final userId = AuthService.supabase().getUser!.id;
 
       await ProfileService().updateProfileWithPhoto(
-        userId: userId,
+        userId: _currentUser.id,
         nome: nameChanged ? name : null,
         telefone: phoneChanged ? phone : null,
         novaFoto: _selectedImage,

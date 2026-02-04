@@ -4,14 +4,14 @@ import 'package:app_links/app_links.dart';
 import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/models/lost_and_find_item.dart';
 import 'package:find_uf/services/profile_service.dart';
-import 'package:find_uf/services/supabase_config.dart';
+import 'package:find_uf/supabase.dart';
+import 'package:find_uf/views/auth/complete_profile_view.dart';
 import 'package:find_uf/views/auth/forgot_password_view.dart';
 import 'package:find_uf/views/auth/login_view.dart';
 import 'package:find_uf/views/auth/register_view.dart';
 import 'package:find_uf/views/auth/reset_password_view.dart';
 import 'package:find_uf/views/auth/verify_email_view.dart';
 import 'package:find_uf/views/home_view.dart';
-import 'package:find_uf/views/auth/complete_profile_view.dart';
 import 'package:find_uf/views/items/create_lost_and_found_item_view.dart';
 import 'package:find_uf/views/items/item_detail_view.dart';
 import 'package:find_uf/views/profile/change_password_view.dart';
@@ -28,8 +28,8 @@ void main() async {
 
   /// Inicializa o Supabase e permite login com tokens e etc
   await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseApiKey,
+    url: SUPABASE_URL,
+    anonKey: SUPABASE_ANON_KEY,
     authOptions: const FlutterAuthClientOptions(
       authFlowType: AuthFlowType.pkce,
     ),

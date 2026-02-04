@@ -55,7 +55,7 @@ class SupabaseAuthProvider extends AuthProvider {
   }) async {
     try {
       await auth.signInWithPassword(password: password, email: email);
-      final user = getUser;
+      final user = await getUser;
 
       if (user != null) {
         return user;
@@ -123,8 +123,8 @@ class SupabaseAuthProvider extends AuthProvider {
   }
 
   @override
-  MyAuthUser? get getUser {
-    final userAtual = auth.currentUser;
+  Future<MyAuthUser?> get getUser async {
+    final userAtual = await auth.currentUser;
     return userAtual != null ? MyAuthUser.fromSupabase(userAtual) : null;
   }
 
@@ -143,7 +143,7 @@ class SupabaseAuthProvider extends AuthProvider {
     String? email,
   }) async {
     if (email == null) {
-      final user = getUser;
+      final user = await getUser;
       if (user == null) {
         throw UserNotLoggedInAuthException();
       }

@@ -154,7 +154,7 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
     });
 
     try {
-      final String userId = AuthService.supabase().getUser!.id;
+      final String userId = (await AuthService.supabase().getUser)!.id;
       final String titulo = _tituloController.text.trim();
       final String descricao = _descricaoController.text.trim();
       final String localizacao = _localizacaoController.text.trim();

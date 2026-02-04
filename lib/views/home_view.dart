@@ -1,5 +1,6 @@
 import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/views/home/home_feed_view.dart';
+import 'package:find_uf/views/home/my_items_view.dart';
 import 'package:find_uf/views/home/search_results_view.dart';
 import 'package:find_uf/views/profile/profile_view.dart';
 import 'package:flutter/material.dart';
@@ -102,7 +103,7 @@ class _HomeViewState extends State<HomeView> {
       case 1:
         return const Center(child: Text('Chats'));
       case 4:
-        return const Center(child: Text('Meus Reportes'));
+        return const MyItemsView();
       case 5:
         return const ProfileView();
       default:
@@ -225,7 +226,7 @@ class _HomeViewState extends State<HomeView> {
             NavigationDestination(
               icon: Icon(Icons.assignment_outlined, color: Colors.white70),
               selectedIcon: Icon(Icons.assignment, color: Colors.white70),
-              label: 'Reportes',
+              label: 'Meus itens',
             ),
             NavigationDestination(
               icon: Icon(Icons.person_outline, color: Colors.white70),

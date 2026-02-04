@@ -1,4 +1,5 @@
 import 'package:find_uf/constants/routes.dart';
+import 'package:find_uf/models/my_auth_user.dart';
 import 'package:find_uf/models/profile.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/profile_service.dart';
@@ -16,18 +17,29 @@ class ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<ProfileView> {
   late Future<Profile> _profileFuture;
+  MyAuthUser? _currentUser;
 
   @override
   void initState() {
     super.initState();
-    final userId = AuthService.supabase().getUser!.id;
-    debugPrint('Fetching profile for userId: $userId');
-    _profileFuture = ProfileService().getProfile(userId);
+    _loadUserAndProfile();
+  }
+
+  Future<void> _loadUserAndProfile() async {
+    final user = await AuthService.supabase().getUser;
+    if (user != null) {
+      setState(() {
+        _currentUser = user;
+        _profileFuture = ProfileService().getProfile(user.id);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = AuthService.supabase().getUser!;
+    if (_currentUser == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
     return FutureBuilder<Profile>(
       future: _profileFuture,
@@ -58,23 +70,20 @@ class _ProfileViewState extends State<ProfileView> {
           );
         }
 
-        final profile = snapshot.data as Profile;
+        final profile = snapshot.data!;
 
         return Column(
           children: [
-            // Seção fixa do topo com foto e informações
             Container(
               padding: const EdgeInsets.all(24),
               color: Colors.white,
               child: Row(
                 children: [
-                  // Foto circular
                   CircleAvatar(
                     radius: 40,
                     backgroundImage: NetworkImage(profile.fotoUrl),
                   ),
                   const SizedBox(width: 16),
-                  // Informações do usuário
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,7 +97,7 @@ class _ProfileViewState extends State<ProfileView> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          user.email,
+                          _currentUser!.email,
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
@@ -109,7 +118,6 @@ class _ProfileViewState extends State<ProfileView> {
               ),
             ),
             const Divider(height: 1),
-            // Lista de operações
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -124,16 +132,13 @@ class _ProfileViewState extends State<ProfileView> {
                         ),
                       );
 
-                      if (foiAtualizado == true) {
+                      if (foiAtualizado == true && _currentUser != null) {
                         setState(() {
                           _profileFuture = ProfileService().getProfile(
-                            AuthService.supabase().getUser!.id,
+                            _currentUser!.id,
                           );
                         });
                       }
-                      debugPrint(
-                        'Perfil ${foiAtualizado == true ? "atualizado" : "não atualizado"}',
-                      );
                     },
                   ),
                   _buildMenuItem(

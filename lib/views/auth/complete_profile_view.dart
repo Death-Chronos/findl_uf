@@ -40,7 +40,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
       if (!_validarCampos()) return;
 
       try {
-        final user = AuthService.supabase().getUser;
+        final user = await AuthService.supabase().getUser;
         if (user == null) {
           _mostrarErro("Usuário não autenticado");
           return;

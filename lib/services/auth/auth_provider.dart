@@ -32,7 +32,7 @@ abstract class AuthProvider {
   Future<void> sendEmailVerification({required String email});
 
   /// Obtém o usuário atual
-  MyAuthUser? get getUser;
+  Future<MyAuthUser?> get getUser;
 
   /// Atualiza dados do usuário
   Future<MyAuthUser> updateUser({String? email, String? password});

@@ -28,7 +28,7 @@ class AuthService implements AuthProvider {
   }
 
   @override
-  MyAuthUser? get getUser => provider.getUser;
+  Future<MyAuthUser?> get getUser => provider.getUser;
 
   @override
   Future<MyAuthUser> login({required String email, required String password}) {
