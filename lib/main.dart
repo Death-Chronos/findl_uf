@@ -12,7 +12,7 @@ import 'package:find_uf/views/auth/register_view.dart';
 import 'package:find_uf/views/auth/reset_password_view.dart';
 import 'package:find_uf/views/auth/verify_email_view.dart';
 import 'package:find_uf/views/home_view.dart';
-import 'package:find_uf/views/items/create_lost_and_found_item_view.dart';
+import 'package:find_uf/views/items/create_update_lost_and_found_item_view.dart';
 import 'package:find_uf/views/items/item_detail_view.dart';
 import 'package:find_uf/views/profile/change_password_view.dart';
 import 'package:flutter/material.dart';
@@ -161,9 +161,10 @@ class _MyAppState extends State<MyApp> {
               builder: (_) => const ChangePasswordView(),
             );
 
-          case createLostAndFoundItemRoute:
+          case createUpdateLostAndFoundItemRoute:
+            final item = settings.arguments as LostAndFoundItem?;
             return MaterialPageRoute(
-              builder: (_) => const CreateLostAndFoundItemView(),
+              builder: (_) => CreateUpdateLostAndFoundItemView(item: item),
             );
           case itemDetailsRoute:
             final item = settings.arguments as LostAndFoundItem;

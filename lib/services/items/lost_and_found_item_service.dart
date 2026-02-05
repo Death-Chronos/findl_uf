@@ -77,19 +77,20 @@ class LostAndFoundItemService {
   }) async {
     try {
       // 1. Cria o item com placeholder
-      final response = await _items
-          .insert({
-            'titulo': titulo,
-            'descricao': descricao,
-            'localizacao': localizacao,
-            'categoria': categoria.name,
-            'status': status.name,
-            'lost_or_found_at': lostOrFoundAt.toUtc().toIso8601String(),
-            'user_id': userId,
-            'fotos_urls': ['placeholder'],
-          })
-          .select()
-          .single();
+      final response =
+          await _items
+              .insert({
+                'titulo': titulo,
+                'descricao': descricao,
+                'localizacao': localizacao,
+                'categoria': categoria.name,
+                'status': status.name,
+                'lost_or_found_at': lostOrFoundAt.toUtc().toIso8601String(),
+                'user_id': userId,
+                'fotos_urls': ['placeholder'],
+              })
+              .select()
+              .single();
 
       final itemId = response['id'] as String;
 
@@ -106,7 +107,6 @@ class LostAndFoundItemService {
           .eq('id', itemId)
           .select()
           .single();
-
     } catch (e) {
       debugPrint('Erro ao criar item de perdidos e achados: $e');
       throw CreateLostAndFoundItemException();
@@ -161,14 +161,16 @@ class LostAndFoundItemService {
   /// Atualiza um item de perdidos e achados
   Future<void> updateItem({
     required String itemId,
+    required String userId,
     String? titulo,
     String? descricao,
     String? localizacao,
     ItemCategory? categoria,
     ItemStatus? status,
     DateTime? lostOrFoundAt,
-    List<File>? imageFiles,
-    required String userId,
+    List<File>? imageFiles, // Novas fotos a serem adicionadas
+    List<String>? existingPhotosUrls, // URLs que devem permanecer
+    List<String>? photosToDelete, // URLs que devem ser deletadas
   }) async {
     try {
       // Monta o mapa com apenas os campos que foram passados
@@ -183,41 +185,39 @@ class LostAndFoundItemService {
         updates['lost_or_found_at'] = lostOrFoundAt.toUtc().toIso8601String();
       }
 
-      // Se há imagens para atualizar
-      if (imageFiles != null && imageFiles.isNotEmpty) {
-        // Busca o item para pegar as fotos antigas
-        final item = await getItemById(itemId);
+      // Gerenciamento de fotos
+      List<String> finalPhotosUrls = [];
 
-        // Faz upload das novas fotos
+      // 1. Mantém as fotos existentes que não foram marcadas para deletar
+      if (existingPhotosUrls != null) {
+        finalPhotosUrls.addAll(existingPhotosUrls);
+      }
+
+      // 2. Faz upload das novas fotos (se houver)
+      if (imageFiles != null && imageFiles.isNotEmpty) {
         final newUrls = await _uploadItemPhotos(
           userId: userId,
           itemId: itemId,
           imageFiles: imageFiles,
         );
+        finalPhotosUrls.addAll(newUrls);
+      }
 
-        updates['fotos_urls'] = newUrls;
+      // 3. Atualiza o campo fotos_urls se houve mudanças
+      if (imageFiles != null ||
+          existingPhotosUrls != null ||
+          (photosToDelete != null && photosToDelete.isNotEmpty)) {
+        updates['fotos_urls'] = finalPhotosUrls;
+      }
 
-        // Atualiza o item
-        await _items
-            .update(updates)
-            .eq('id', itemId)
-            .select()
-            .single();
+      // Atualiza o item no banco
+      if (updates.isNotEmpty) {
+        await _items.update(updates).eq('id', itemId).select().single();
+      }
 
-        // Remove fotos antigas do Storage
-        await _deletePhotosFromStorage(item.fotosUrls);
-
-      } else if (updates.isNotEmpty) {
-        // Atualiza apenas os campos de texto
-        _items
-            .update(updates)
-            .eq('id', itemId)
-            .select()
-            .single();
-
-      } else {
-        // Nada para atualizar
-        return;
+      // 4. Deleta as fotos marcadas do Storage (após atualizar o banco)
+      if (photosToDelete != null && photosToDelete.isNotEmpty) {
+        await _deletePhotosFromStorage(photosToDelete);
       }
     } catch (e) {
       debugPrint('Erro ao atualizar item: $e');
@@ -228,11 +228,12 @@ class LostAndFoundItemService {
   /// Marca um item como resolvido
   Future<LostAndFoundItem> resolveItem(String itemId) async {
     try {
-      final response = await _items
-          .update({'status': ItemStatus.resolved.name})
-          .eq('id', itemId)
-          .select()
-          .single();
+      final response =
+          await _items
+              .update({'status': ItemStatus.resolved.name})
+              .eq('id', itemId)
+              .select()
+              .single();
 
       return LostAndFoundItem.fromJson(response);
     } catch (e) {

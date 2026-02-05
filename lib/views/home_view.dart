@@ -30,7 +30,7 @@ class _HomeViewState extends State<HomeView> {
   void _onTabTapped(int index) {
     if (index == 2) {
       // Botão de criar reporte (+)
-      Navigator.of(context).pushNamed(createLostAndFoundItemRoute);
+      Navigator.of(context).pushNamed(createUpdateLostAndFoundItemRoute);
       return;
     }
 

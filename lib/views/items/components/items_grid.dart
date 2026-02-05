@@ -1,9 +1,8 @@
-
 import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/models/lost_and_find_item.dart';
 import 'package:flutter/material.dart';
 
-import '../item_card.dart';
+import 'item_card.dart';
 
 class ItemsGridView extends StatelessWidget {
   final List<LostAndFoundItem> items;
@@ -75,9 +74,18 @@ class ItemsGridView extends StatelessWidget {
           final item = items[index];
           return ItemCard(
             item: item,
-            onTap: () {
-              Navigator.pushNamed(context, itemDetailsRoute,
-                  arguments: item);
+            onTap: () async {
+              //  Aguarda o retorno da navegação
+              final result = await Navigator.pushNamed(
+                context,
+                itemDetailsRoute,
+                arguments: item,
+              );
+
+              // Se retornou true (item foi editado/deletado), recarrega
+              if (result == true && onRefresh != null) {
+                onRefresh!();
+              }
             },
           );
         },

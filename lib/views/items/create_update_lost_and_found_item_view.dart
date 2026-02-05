@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:find_uf/models/enums/item_category.dart';
 import 'package:find_uf/models/enums/item_status.dart';
+import 'package:find_uf/models/lost_and_find_item.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/items/lost_and_found_item_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
@@ -8,14 +9,18 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
-class CreateLostAndFoundItemView extends StatefulWidget {
-  const CreateLostAndFoundItemView({super.key});
+class CreateUpdateLostAndFoundItemView extends StatefulWidget {
+  final LostAndFoundItem? item;
 
+  const CreateUpdateLostAndFoundItemView({super.key, this.item});
+  
   @override
-  _CreateLostAndFoundItemViewState createState() => _CreateLostAndFoundItemViewState();
+  _CreateUpdateLostAndFoundItemViewState createState() =>
+      _CreateUpdateLostAndFoundItemViewState();
 }
 
-class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView> {
+class _CreateUpdateLostAndFoundItemViewState
+    extends State<CreateUpdateLostAndFoundItemView> {
   final _formKey = GlobalKey<FormState>();
   final _tituloController = TextEditingController();
   final _descricaoController = TextEditingController();
@@ -24,10 +29,21 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
   ItemCategory? _selectedCategory;
   ItemStatus? _selectedStatus;
   DateTime? _lostOrFoundAt;
-  List<XFile> _selectedImages = [];
+  
+  // Listas para gerenciar fotos
+  List<XFile> _selectedImages = []; // Novas fotos locais
+  List<String> _existingPhotosUrls = []; // URLs das fotos já no servidor
+  List<String> _photosToDelete = []; // URLs marcadas para deletar
+  
   bool _isLoading = false;
 
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadExistingItemIfExists();
+  }
 
   @override
   void dispose() {
@@ -97,6 +113,14 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
     });
   }
 
+  void _removeExistingPhoto(int index) {
+    setState(() {
+      final url = _existingPhotosUrls[index];
+      _photosToDelete.add(url);
+      _existingPhotosUrls.removeAt(index);
+    });
+  }
+
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -133,19 +157,46 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
     return labels[status] ?? status.name;
   }
 
+  Future<void> _loadExistingItemIfExists() async {
+    if (widget.item != null) {
+      final item = widget.item!;
+      setState(() {
+        _tituloController.text = item.titulo;
+        _descricaoController.text = item.descricao;
+        _localizacaoController.text = item.localizacao;
+        _selectedCategory = item.categoria;
+        _selectedStatus = item.status;
+        _lostOrFoundAt = item.lostOrFoundAt;
+        
+        // Carrega as URLs existentes
+        _existingPhotosUrls = List<String>.from(item.fotosUrls);
+        _selectedImages = []; // Novas imagens vazias
+        _photosToDelete = []; // Nada marcado para deletar
+      });
+    }
+  }
+
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    if (_selectedImages.isEmpty) {
-      showErrorDialog(context, title: "Erro ao cadastrar", message: "Selecione ao menos uma foto.");
+    // Valida se tem pelo menos 1 foto (existente OU nova)
+    if (_existingPhotosUrls.isEmpty && _selectedImages.isEmpty) {
+      showErrorDialog(
+        context,
+        title: "Erro ao cadastrar",
+        message: "Selecione ao menos uma foto.",
+      );
       return;
     }
 
     if (_lostOrFoundAt == null) {
-      
-      showErrorDialog(context, title: "Erro ao cadastrar", message: "Selecione a data do ocorrido.");
+      showErrorDialog(
+        context,
+        title: "Erro ao cadastrar",
+        message: "Selecione a data do ocorrido.",
+      );
       return;
     }
 
@@ -161,37 +212,76 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
       final ItemCategory categoria = _selectedCategory!;
       final ItemStatus status = _selectedStatus!;
       final DateTime lostOrFoundAt = _lostOrFoundAt!;
-      final List<File> imageFiles = _selectedImages.map((xfile) => File(xfile.path)).toList();
-      
-      await LostAndFoundItemService().createLostAndFoundItem(
-        userId: userId, 
-        titulo: titulo, 
-        descricao: descricao, 
-        localizacao: localizacao, 
-        categoria: categoria, 
-        status: status, 
-        lostOrFoundAt: lostOrFoundAt, 
-        imageFiles: imageFiles);
+      final List<File> imageFiles =
+          _selectedImages.map((xfile) => File(xfile.path)).toList();
 
+      if (widget.item != null) {
+        // Modo EDIÇÃO
+        await LostAndFoundItemService().updateItem(
+          itemId: widget.item!.id,
+          userId: userId,
+          titulo: titulo,
+          descricao: descricao,
+          localizacao: localizacao,
+          categoria: categoria,
+          status: status,
+          lostOrFoundAt: lostOrFoundAt,
+          imageFiles: imageFiles.isNotEmpty ? imageFiles : null,
+          existingPhotosUrls: _existingPhotosUrls,
+          photosToDelete: _photosToDelete,
+        );
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Item criado com sucesso!')));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Item atualizado com sucesso!')),
+          );
+          Navigator.pop(context, true); // Retorna true indicando sucesso
+        }
+      } else {
+        // Modo CRIAÇÃO
+        await LostAndFoundItemService().createLostAndFoundItem(
+          userId: userId,
+          titulo: titulo,
+          descricao: descricao,
+          localizacao: localizacao,
+          categoria: categoria,
+          status: status,
+          lostOrFoundAt: lostOrFoundAt,
+          imageFiles: imageFiles,
+        );
 
-      Navigator.pop(context);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Item criado com sucesso!')),
+          );
+          Navigator.pop(context, true);
+        }
+      }
     } catch (e) {
-      showErrorDialog(context, title: "Erro ao criar item", message: e.toString());
+      if (mounted) {
+        showErrorDialog(
+          context,
+          title: widget.item != null ? "Erro ao atualizar item" : "Erro ao criar item",
+          message: e.toString(),
+        );
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isEditMode = widget.item != null;
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('Criar Reporte')),
+      appBar: AppBar(
+        title: Text(isEditMode ? 'Editar Item' : 'Criar Reporte'),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -264,23 +354,21 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
                     border: OutlineInputBorder(),
                   ),
                   value: _selectedCategory,
-                  items:
-                      ItemCategory.values
-                          .map(
-                            (category) => DropdownMenuItem(
-                              value: category,
-                              child: Text(_getCategoryLabel(category)),
-                            ),
-                          )
-                          .toList(),
+                  items: ItemCategory.values
+                      .map(
+                        (category) => DropdownMenuItem(
+                          value: category,
+                          child: Text(_getCategoryLabel(category)),
+                        ),
+                      )
+                      .toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedCategory = value;
                     });
                   },
-                  validator:
-                      (value) =>
-                          value == null ? 'Selecione uma categoria' : null,
+                  validator: (value) =>
+                      value == null ? 'Selecione uma categoria' : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -291,23 +379,22 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
                     border: OutlineInputBorder(),
                   ),
                   value: _selectedStatus,
-                  items:
-                      ItemStatus.values
-                          .where((status) => status != ItemStatus.resolved)
-                          .map(
-                            (status) => DropdownMenuItem(
-                              value: status,
-                              child: Text(_getStatusLabel(status)),
-                            ),
-                          )
-                          .toList(),
+                  items: ItemStatus.values
+                      .where((status) => status != ItemStatus.resolved)
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(_getStatusLabel(status)),
+                        ),
+                      )
+                      .toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedStatus = value;
                     });
                   },
-                  validator:
-                      (value) => value == null ? 'Selecione um status' : null,
+                  validator: (value) =>
+                      value == null ? 'Selecione um status' : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -325,10 +412,9 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
                           ? 'Selecione a data'
                           : DateFormat('dd/MM/yyyy').format(_lostOrFoundAt!),
                       style: TextStyle(
-                        color:
-                            _lostOrFoundAt == null
-                                ? Colors.grey[600]
-                                : Colors.black,
+                        color: _lostOrFoundAt == null
+                            ? Colors.grey[600]
+                            : Colors.black,
                       ),
                     ),
                   ),
@@ -342,14 +428,74 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
                 ),
                 const SizedBox(height: 8),
 
-                // Grid de fotos selecionadas
-                if (_selectedImages.isNotEmpty)
+                // Grid de fotos (existentes + novas)
+                if (_existingPhotosUrls.isNotEmpty || _selectedImages.isNotEmpty)
                   SizedBox(
                     height: 120,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: _selectedImages.length,
+                      itemCount: _existingPhotosUrls.length + _selectedImages.length,
                       itemBuilder: (context, index) {
+                        // Fotos existentes do servidor
+                        if (index < _existingPhotosUrls.length) {
+                          final url = _existingPhotosUrls[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    url,
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Container(
+                                        width: 120,
+                                        height: 120,
+                                        color: Colors.grey[300],
+                                        child: const Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder: (context, error, stack) {
+                                      return Container(
+                                        width: 120,
+                                        height: 120,
+                                        color: Colors.grey[300],
+                                        child: const Icon(Icons.error),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 4,
+                                  right: 4,
+                                  child: GestureDetector(
+                                    onTap: () => _removeExistingPhoto(index),
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+
+                        // Novas fotos locais
+                        final localIndex = index - _existingPhotosUrls.length;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8.0),
                           child: Stack(
@@ -357,7 +503,7 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.file(
-                                  File(_selectedImages[index].path),
+                                  File(_selectedImages[localIndex].path),
                                   width: 120,
                                   height: 120,
                                   fit: BoxFit.cover,
@@ -367,7 +513,7 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
                                 top: 4,
                                 right: 4,
                                 child: GestureDetector(
-                                  onTap: () => _removeImage(index),
+                                  onTap: () => _removeImage(localIndex),
                                   child: Container(
                                     decoration: const BoxDecoration(
                                       color: Colors.red,
@@ -394,7 +540,7 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
                   onPressed: _chooseImageSource,
                   icon: const Icon(Icons.add_photo_alternate),
                   label: Text(
-                    _selectedImages.isEmpty
+                    (_selectedImages.isEmpty && _existingPhotosUrls.isEmpty)
                         ? 'Adicionar Fotos'
                         : 'Adicionar Mais Fotos',
                   ),
@@ -410,17 +556,16 @@ class _CreateLostAndFoundItemViewState extends State<CreateLostAndFoundItemView>
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child:
-                      _isLoading
-                          ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                          : const Text(
-                            'Enviar',
-                            style: TextStyle(fontSize: 16),
-                          ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          isEditMode ? 'Salvar Alterações' : 'Enviar',
+                          style: const TextStyle(fontSize: 16),
+                        ),
                 ),
               ],
             ),

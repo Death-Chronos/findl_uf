@@ -1,3 +1,4 @@
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/models/lost_and_find_item.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/items/lost_and_found_item_service.dart';
@@ -316,7 +317,20 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                         children: [
                           Expanded(
                             child: TapButton(
-                              onTap: () {},
+                              onTap: () async {
+                                final result = await Navigator.of(
+                                  context,
+                                ).pushNamed(
+                                  createUpdateLostAndFoundItemRoute,
+                                  arguments: widget.item,
+                                );
+
+                                if (result == true && mounted) {
+                                  Navigator.of(context).pop(
+                                    true,
+                                  ); // Passa true indicando que houve mudança
+                                }
+                              },
                               text: 'Editar',
                               color: Color(0xFF173C7B),
                             ),

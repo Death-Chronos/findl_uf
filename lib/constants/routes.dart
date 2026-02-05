@@ -10,6 +10,6 @@ const homeRoute = "/home/";
 
 const changePasswordRoute = "/profile/changePassword/";
 
-const createLostAndFoundItemRoute = "/createItemReport/";
-const lostAndFindItemRoute = "/viewItemReport/";
+const createUpdateLostAndFoundItemRoute = "/createUpdateItem/";
+const lostAndFindItemRoute = "/viewItem/";
 const itemDetailsRoute = "/itemDetails/";
