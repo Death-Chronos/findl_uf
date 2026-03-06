@@ -179,8 +179,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-// Widget que verifica o estado de autenticação e decide a rota inicial (mudei para StatefulWidget,
-// depois verificar se deu certo o problema de voltar para tela de completar perfil)
+// Widget que verifica o estado de autenticação e decide a rota inicial
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 

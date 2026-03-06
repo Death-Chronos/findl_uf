@@ -80,7 +80,7 @@ class _MyItemsViewState extends State<MyItemsView> {
     return ItemsGridView(
       items: _items,
       isLoading: _isLoading,
-      emptyMessage: 'Nenhum item cadastrado ainda.\n Caso ache/algo, cadastre aqui!',
+      emptyMessage: 'Nenhum item cadastrado ainda.\n Caso cadastre algo, aparecerá aqui!',
       onRefresh: _loadItems,
     );
   }

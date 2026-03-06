@@ -13,7 +13,7 @@ class CreateUpdateLostAndFoundItemView extends StatefulWidget {
   final LostAndFoundItem? item;
 
   const CreateUpdateLostAndFoundItemView({super.key, this.item});
-  
+
   @override
   _CreateUpdateLostAndFoundItemViewState createState() =>
       _CreateUpdateLostAndFoundItemViewState();
@@ -29,12 +29,12 @@ class _CreateUpdateLostAndFoundItemViewState
   ItemCategory? _selectedCategory;
   ItemStatus? _selectedStatus;
   DateTime? _lostOrFoundAt;
-  
+
   // Listas para gerenciar fotos
   List<XFile> _selectedImages = []; // Novas fotos locais
   List<String> _existingPhotosUrls = []; // URLs das fotos já no servidor
   List<String> _photosToDelete = []; // URLs marcadas para deletar
-  
+
   bool _isLoading = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -167,7 +167,7 @@ class _CreateUpdateLostAndFoundItemViewState
         _selectedCategory = item.categoria;
         _selectedStatus = item.status;
         _lostOrFoundAt = item.lostOrFoundAt;
-        
+
         // Carrega as URLs existentes
         _existingPhotosUrls = List<String>.from(item.fotosUrls);
         _selectedImages = []; // Novas imagens vazias
@@ -178,6 +178,12 @@ class _CreateUpdateLostAndFoundItemViewState
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
+      showErrorDialog(
+        context,
+        title: "Erro",
+        message: "Por favor, preencha todos os campos obrigatórios.",
+      );
+
       return;
     }
 
@@ -261,7 +267,10 @@ class _CreateUpdateLostAndFoundItemViewState
       if (mounted) {
         showErrorDialog(
           context,
-          title: widget.item != null ? "Erro ao atualizar item" : "Erro ao criar item",
+          title:
+              widget.item != null
+                  ? "Erro ao atualizar item"
+                  : "Erro ao criar item",
           message: e.toString(),
         );
       }
@@ -277,11 +286,9 @@ class _CreateUpdateLostAndFoundItemViewState
   @override
   Widget build(BuildContext context) {
     final isEditMode = widget.item != null;
-    
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(isEditMode ? 'Editar Item' : 'Criar Reporte'),
-      ),
+      appBar: AppBar(title: Text(isEditMode ? 'Editar Item' : 'Reportar Item')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -354,21 +361,23 @@ class _CreateUpdateLostAndFoundItemViewState
                     border: OutlineInputBorder(),
                   ),
                   value: _selectedCategory,
-                  items: ItemCategory.values
-                      .map(
-                        (category) => DropdownMenuItem(
-                          value: category,
-                          child: Text(_getCategoryLabel(category)),
-                        ),
-                      )
-                      .toList(),
+                  items:
+                      ItemCategory.values
+                          .map(
+                            (category) => DropdownMenuItem(
+                              value: category,
+                              child: Text(_getCategoryLabel(category)),
+                            ),
+                          )
+                          .toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedCategory = value;
                     });
                   },
-                  validator: (value) =>
-                      value == null ? 'Selecione uma categoria' : null,
+                  validator:
+                      (value) =>
+                          value == null ? 'Selecione uma categoria' : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -379,22 +388,23 @@ class _CreateUpdateLostAndFoundItemViewState
                     border: OutlineInputBorder(),
                   ),
                   value: _selectedStatus,
-                  items: ItemStatus.values
-                      .where((status) => status != ItemStatus.resolved)
-                      .map(
-                        (status) => DropdownMenuItem(
-                          value: status,
-                          child: Text(_getStatusLabel(status)),
-                        ),
-                      )
-                      .toList(),
+                  items:
+                      ItemStatus.values
+                          .where((status) => status != ItemStatus.resolved)
+                          .map(
+                            (status) => DropdownMenuItem(
+                              value: status,
+                              child: Text(_getStatusLabel(status)),
+                            ),
+                          )
+                          .toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedStatus = value;
                     });
                   },
-                  validator: (value) =>
-                      value == null ? 'Selecione um status' : null,
+                  validator:
+                      (value) => value == null ? 'Selecione um status' : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -412,9 +422,10 @@ class _CreateUpdateLostAndFoundItemViewState
                           ? 'Selecione a data'
                           : DateFormat('dd/MM/yyyy').format(_lostOrFoundAt!),
                       style: TextStyle(
-                        color: _lostOrFoundAt == null
-                            ? Colors.grey[600]
-                            : Colors.black,
+                        color:
+                            _lostOrFoundAt == null
+                                ? Colors.grey[600]
+                                : Colors.black,
                       ),
                     ),
                   ),
@@ -429,12 +440,14 @@ class _CreateUpdateLostAndFoundItemViewState
                 const SizedBox(height: 8),
 
                 // Grid de fotos (existentes + novas)
-                if (_existingPhotosUrls.isNotEmpty || _selectedImages.isNotEmpty)
+                if (_existingPhotosUrls.isNotEmpty ||
+                    _selectedImages.isNotEmpty)
                   SizedBox(
                     height: 120,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: _existingPhotosUrls.length + _selectedImages.length,
+                      itemCount:
+                          _existingPhotosUrls.length + _selectedImages.length,
                       itemBuilder: (context, index) {
                         // Fotos existentes do servidor
                         if (index < _existingPhotosUrls.length) {
@@ -556,16 +569,17 @@ class _CreateUpdateLostAndFoundItemViewState
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(
-                          isEditMode ? 'Salvar Alterações' : 'Enviar',
-                          style: const TextStyle(fontSize: 16),
-                        ),
+                  child:
+                      _isLoading
+                          ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : Text(
+                            isEditMode ? 'Salvar Alterações' : 'Enviar',
+                            style: const TextStyle(fontSize: 16),
+                          ),
                 ),
               ],
             ),
