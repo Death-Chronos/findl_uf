@@ -3,6 +3,7 @@ import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/views/components/tap_button.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ResetPasswordView extends StatefulWidget {
   final String? email;
@@ -58,12 +59,18 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
       }
 
       // Verificar se já está logado ou precisa validar token
-      if (AuthService.supabase().getUser == null) {
-        await AuthService.supabase().confirmPasswordRecoverToken(
+      if (await AuthService.supabase().getUser == null) {
+        final AuthResponse response = await AuthService.supabase().confirmPasswordRecoverToken(
           token: _token.text,
           email: widget.email,
         );
+
+        debugPrint('Session após verifyOTP: ${response.session}');
+        debugPrint('User após verifyOTP: ${response.user}');
       }
+
+      
+      debugPrint('Current user: ${ await AuthService.supabase().getUser}');
 
       await AuthService.supabase().updateUser(password: _novaSenha.text);
 
@@ -87,9 +94,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Atualizar Senha",
-        ),
+        title: const Text("Atualizar Senha"),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),

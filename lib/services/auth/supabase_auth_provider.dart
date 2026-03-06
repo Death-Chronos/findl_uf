@@ -99,8 +99,7 @@ class SupabaseAuthProvider extends AuthProvider {
         default:
           throw GenericAuthException(e.toString());
       }
-    }
-    catch (e) {
+    } catch (e) {
       throw GenericAuthException(e.toString());
     }
   }
@@ -124,7 +123,7 @@ class SupabaseAuthProvider extends AuthProvider {
 
   @override
   Future<MyAuthUser?> get getUser async {
-    final userAtual = await auth.currentUser;
+    final userAtual = auth.currentUser;
     return userAtual != null ? MyAuthUser.fromSupabase(userAtual) : null;
   }
 
@@ -151,11 +150,20 @@ class SupabaseAuthProvider extends AuthProvider {
     }
 
     try {
-      return await auth.verifyOTP(
+      final response = await auth.verifyOTP(
         type: OtpType.recovery,
         token: token,
         email: email,
       );
+
+      // Verificar se a sessão foi estabelecida
+      if (response.session == null) {
+        throw GenericAuthException('Falha ao estabelecer sessão');
+      }
+
+      await auth.refreshSession();
+
+      return response;
     } on AuthException catch (e) {
       debugPrint(e.code);
       switch (e.code) {
@@ -176,31 +184,31 @@ class SupabaseAuthProvider extends AuthProvider {
   Future<void> sendPasswordRecoverToken({required String email}) async {
     return await auth.resetPasswordForEmail(email);
   }
-  
-  @override
-Future<String> updatePasswordWithCurrent({
-  required String currentPassword,
-  required String newPassword,
-}) async {
-  try {
-    // Chama a função RPC do Supabase
-    final response = await rpc(
-      'update_password',
-      params: {
-        'current_plain_password': currentPassword,
-        'new_plain_password': newPassword,
-      },
-    );
 
-    // Retorna o resultado da função ('success', 'incorrect' ou 'unauthorized')
-    return response as String;
-  } on PostgrestException catch (e) {
-    // Erro ao chamar a função RPC
-    debugPrint('PostgrestException: ${e.message}');
-    throw GenericAuthException('Erro ao atualizar senha: ${e.message}');
-  } catch (e) {
-    debugPrint('Erro desconhecido: $e');
-    throw GenericAuthException('Erro inesperado ao atualizar senha');
+  @override
+  Future<String> updatePasswordWithCurrent({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      // Chama a função RPC do Supabase
+      final response = await rpc(
+        'update_password',
+        params: {
+          'current_plain_password': currentPassword,
+          'new_plain_password': newPassword,
+        },
+      );
+
+      // Retorna o resultado da função ('success', 'incorrect' ou 'unauthorized')
+      return response as String;
+    } on PostgrestException catch (e) {
+      // Erro ao chamar a função RPC
+      debugPrint('PostgrestException: ${e.message}');
+      throw GenericAuthException('Erro ao atualizar senha: ${e.message}');
+    } catch (e) {
+      debugPrint('Erro desconhecido: $e');
+      throw GenericAuthException('Erro inesperado ao atualizar senha');
+    }
   }
-}
 }

@@ -189,45 +189,9 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
-  late Future<Map<String, dynamic>> _future;
-
-  @override
-  void initState() {
-    super.initState();
-    _future = _checkSessionAndProfile();
-  }
-
-  Future<Map<String, dynamic>> _checkSessionAndProfile() async {
-    final supabase = Supabase.instance.client;
-    final session = supabase.auth.currentSession;
-
-    if (session == null) {
-      return {'hasSession': false, 'hasProfile': false};
-    }
-
-    final profileExists = await ProfileService().profileExists(session.user.id);
-
-    return {'hasSession': true, 'hasProfile': profileExists};
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: _future,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        final data =
-            snapshot.data ?? {'hasSession': false, 'hasProfile': false};
-
-        if (!data['hasSession']) return LoginView();
-        if (!data['hasProfile']) return const CompleteProfileView();
-        return HomeView();
-      },
-    );
+    final session = Supabase.instance.client.auth.currentSession;
+    return session == null ? LoginView() : HomeView();
   }
 }
