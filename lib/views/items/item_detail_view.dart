@@ -62,13 +62,21 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
     final String statusText =
         widget.item.status == ItemStatus.lost ? 'perdeu' : 'achou';
     final String message = Uri.encodeComponent(
-      'Olá! Vi que você $statusText: isso: ${widget.item.titulo}. Gostaria de mais informações.',
+      'Olá! Vi que você $statusText isso: ${widget.item.titulo}. Gostaria de mais informações.',
     );
 
-    final Uri whatsappUrl = Uri.parse('https://wa.me/55$phone?text=$message');
+    final Uri whatsappUrl = Uri.parse(
+      'whatsapp://send?phone=55$phone&text=$message',
+    );
+
+    debugPrint('URL: $whatsappUrl'); // Verifica a URL gerada
+    debugPrint('Phone raw: ${_userProfile!.telefone}');
+    debugPrint('Phone clean: $phone');
 
     try {
-      if (await canLaunchUrl(whatsappUrl)) {
+      final bool canLaunch = await canLaunchUrl(whatsappUrl);
+      debugPrint('Can launch: $canLaunch');
+      if (canLaunch) {
         await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
       } else {
         if (mounted) {
