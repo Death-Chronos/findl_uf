@@ -13,11 +13,32 @@ class ItemCard extends StatelessWidget {
     this.onTap,
   });
 
+  Color _getBadgeColor() {
+    switch (item.status) {
+      case ItemStatus.found:
+        return Colors.green.shade600;
+      case ItemStatus.lost:
+        return Colors.red.shade700;
+      case ItemStatus.resolved:
+        return const Color(0xFF173C7B);
+    }
+  }
+
+  IconData _getBadgeIcon() {
+    switch (item.status) {
+      case ItemStatus.found:
+        return Icons.inventory_2_outlined;
+      case ItemStatus.lost:
+        return Icons.search;
+      case ItemStatus.resolved:
+        return Icons.check_circle_outline;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final categoryColors = CategoryHelper.getCategoryColors(item.categoria);
     final categoryLabel = CategoryHelper.getCategoryLabel(item.categoria);
-    final isFound = item.status == ItemStatus.found;
 
     return Card(
       elevation: 4,
@@ -79,14 +100,14 @@ class ItemCard extends StatelessWidget {
               ],
             ),
 
-            // Badge de status (Found/Lost)
+            // Badge de status
             Positioned(
               top: 8,
               right: 8,
               child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: isFound ? Colors.green.shade600 : Colors.red.shade700,
+                  color: _getBadgeColor(),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -97,7 +118,7 @@ class ItemCard extends StatelessWidget {
                   ],
                 ),
                 child: Icon(
-                  isFound ? Icons.inventory_2_outlined : Icons.search,
+                  _getBadgeIcon(),
                   color: Colors.white,
                   size: 30,
                 ),
