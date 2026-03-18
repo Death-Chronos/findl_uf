@@ -4,7 +4,7 @@ import 'package:path/path.dart' as path;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileService {
-  final _profiles = Supabase.instance.client.from('perfil');
+  final _profiles = Supabase.instance.client.from('profile');
   final _photoStorage = Supabase.instance.client.storage.from('foto_perfil');
 
   /// 1. Criar perfil inicial (sem foto)

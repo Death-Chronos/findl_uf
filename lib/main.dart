@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/models/lost_and_find_item.dart';
-import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/supabase.dart';
 import 'package:find_uf/views/auth/complete_profile_view.dart';
 import 'package:find_uf/views/auth/forgot_password_view.dart';
