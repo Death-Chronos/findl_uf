@@ -27,12 +27,13 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
   bool _isLoading = true;
   String? _error;
   late bool _isOwner;
-  late bool _isResolved = widget.item.status == ItemStatus.resolved;
+  late bool _isResolved;
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _isResolved = widget.item.status == ItemStatus.resolved;
   }
 
   Future<void> _loadUserProfile() async {
