@@ -26,10 +26,11 @@ Future<void> showErrorDialog(
 
 Future<bool> showConfirmationDialog({
   required BuildContext context,
-  required title,
+  required String title,
   required String message,
   required String confirmText,
   required String cancelText,
+  Color? confirmColor, // Adicione este parâmetro opcional
 }) {
   return showDialog<bool>(
     context: context,
@@ -44,6 +45,9 @@ Future<bool> showConfirmationDialog({
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
+            style: confirmColor != null 
+              ? TextButton.styleFrom(foregroundColor: confirmColor)
+              : null,
             child: Text(confirmText),
           ),
         ],

@@ -45,4 +45,4 @@ app.*.map.json
 /android/app/release
 
 # Supabase
-/lib/services/auth/supabase_config.dart
+lib/supabase.dart

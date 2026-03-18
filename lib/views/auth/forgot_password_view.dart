@@ -1,8 +1,8 @@
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/tools/validacoes.dart';
-import 'package:find_uf/views/widgets/tap_button.dart';
+import 'package:find_uf/views/components/tap_button.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordView extends StatefulWidget {
@@ -47,9 +47,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Resetar Senha", style: TextStyle(color: Colors.white)),
+        title: Text("Resetar Senha"),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.white,

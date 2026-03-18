@@ -5,11 +5,13 @@ import 'package:image_picker/image_picker.dart';
 class AppImagePicker extends StatefulWidget {
   final void Function(File? image) onImageSelected;
   final File? initialImage;
+  final String? initialImageUrl;
 
   const AppImagePicker({
     super.key,
     required this.onImageSelected,
     this.initialImage,
+    this.initialImageUrl,
   });
 
   @override
@@ -17,16 +19,16 @@ class AppImagePicker extends StatefulWidget {
 }
 
 class _AppImagePickerState extends State<AppImagePicker> {
-  File? _imagem;
-  final ImagePicker picker = ImagePicker();
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
-    _imagem = widget.initialImage;
     super.initState();
+    _image = widget.initialImage;
   }
 
-  Future<void> _escolherImagem() async {
+  Future<void> _chooseImage() async {
     showModalBottomSheet(
       context: context,
       builder: (_) {
@@ -37,12 +39,12 @@ class _AppImagePickerState extends State<AppImagePicker> {
                 leading: const Icon(Icons.camera_alt),
                 title: const Text("Tirar foto"),
                 onTap: () async {
-                  final img = await picker.pickImage(
+                  final img = await _picker.pickImage(
                     source: ImageSource.camera,
                   );
                   if (img != null) {
-                    setState(() => _imagem = File(img.path));
-                    widget.onImageSelected(_imagem);
+                    setState(() => _image = File(img.path));
+                    widget.onImageSelected(_image);
                   }
                   Navigator.pop(context);
                 },
@@ -51,12 +53,12 @@ class _AppImagePickerState extends State<AppImagePicker> {
                 leading: const Icon(Icons.photo),
                 title: const Text("Escolher da galeria"),
                 onTap: () async {
-                  final img = await picker.pickImage(
+                  final img = await _picker.pickImage(
                     source: ImageSource.gallery,
                   );
                   if (img != null) {
-                    setState(() => _imagem = File(img.path));
-                    widget.onImageSelected(_imagem);
+                    setState(() => _image = File(img.path));
+                    widget.onImageSelected(_image);
                   }
                   Navigator.pop(context);
                 },
@@ -68,30 +70,44 @@ class _AppImagePickerState extends State<AppImagePicker> {
     );
   }
 
+  Widget _buildImage() {
+    if (_image != null) {
+      return Image.file(
+        _image!,
+        fit: BoxFit.cover,
+        width: 140,
+        height: 140,
+      );
+    }
+
+    if (widget.initialImageUrl != null) {
+      return Image.network(
+        widget.initialImageUrl!,
+        fit: BoxFit.cover,
+        width: 140,
+        height: 140,
+        errorBuilder: (_, __, ___) {
+          return const Icon(Icons.person, size: 40, color: Colors.grey);
+        },
+      );
+    }
+
+    return const Icon(Icons.add_a_photo, size: 40, color: Colors.grey);
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _escolherImagem,
+      onTap: _chooseImage,
       child: Container(
         height: 140,
         width: 140,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100),
+          shape: BoxShape.circle,
           border: Border.all(color: Colors.grey),
         ),
-        child:
-            _imagem == null
-                ? const Center(
-                  child: Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
-                )
-                : ClipOval(
-                  child: Image.file(
-                    _imagem!,
-                    fit: BoxFit.cover,
-                    width: 140,
-                    height: 140,
-                  ),
-                ),
+        clipBehavior: Clip.antiAlias,
+        child: _buildImage(),
       ),
     );
   }

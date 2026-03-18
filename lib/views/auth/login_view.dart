@@ -1,11 +1,11 @@
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/models/my_auth_user.dart';
 import 'package:find_uf/services/auth/auth_exceptions.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/tools/validacoes.dart';
-import 'package:find_uf/views/widgets/tap_button.dart';
+import 'package:find_uf/views/components/tap_button.dart';
 import 'package:flutter/material.dart';
 
 class LoginView extends StatefulWidget {
@@ -31,9 +31,8 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login", style: TextStyle(color: Colors.white)),
+        title: const Text("Login"),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -45,6 +44,7 @@ class _LoginViewState extends State<LoginView> {
               "Realize o login para acessar o aplicativo, ou entre como visitante.",
               style: TextStyle(fontSize: 14),
             ),
+            SizedBox(height: 8),
             TextField(
               controller: _email,
               decoration: InputDecoration(
@@ -81,9 +81,7 @@ class _LoginViewState extends State<LoginView> {
                 Text("Esqueceu a sua senha?"),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pushNamed(
-                      forgotPasswordRoute,
-                    );
+                    Navigator.of(context).pushNamed(forgotPasswordRoute);
                   },
                   child: Text("Clique aqui"),
                 ),
@@ -96,7 +94,7 @@ class _LoginViewState extends State<LoginView> {
                 TapButton(
                   onTap: () async {
                     final email = _email.text;
-                    final senha = _senha.text;
+                    final password = _senha.text;
 
                     final erro = Validacoes.validarEmail(_email.text);
 
@@ -109,7 +107,7 @@ class _LoginViewState extends State<LoginView> {
 
                     try {
                       final MyAuthUser user = await AuthService.supabase()
-                          .login(email: email, senha: senha);
+                          .login(email: email, password: password);
 
                       debugPrint('user logged in: ${user.id}');
 

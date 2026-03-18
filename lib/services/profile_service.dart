@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:find_uf/models/profile.dart';
+import 'package:path/path.dart' as path;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfileService {
-  final _profiles = Supabase.instance.client.from('perfil');
+  final _profiles = Supabase.instance.client.from('profile');
   final _photoStorage = Supabase.instance.client.storage.from('foto_perfil');
 
   /// 1. Criar perfil inicial (sem foto)
@@ -29,17 +30,17 @@ class ProfileService {
     required File imageFile,
   }) async {
     try {
-      final String nomeArquivo = '$userId.jpg';
+      final extension = path.extension(imageFile.path).toLowerCase();
 
-      await _photoStorage
-          .upload(
-            nomeArquivo,
-            imageFile,
-            fileOptions: const FileOptions(upsert: true),
-          );
+      final String nomeArquivo = '$userId$extension';
 
-      final String publicUrl = _photoStorage
-          .getPublicUrl(nomeArquivo);
+      await _photoStorage.upload(
+        nomeArquivo,
+        imageFile,
+        fileOptions: const FileOptions(upsert: true),
+      );
+
+      final String publicUrl = _photoStorage.getPublicUrl(nomeArquivo);
 
       return publicUrl;
     } catch (e) {
@@ -53,9 +54,7 @@ class ProfileService {
     required String fotoUrl,
   }) async {
     try {
-      await _profiles
-          .update({'foto_url': fotoUrl})
-          .eq('id', userId);
+      await _profiles.update({'foto_url': fotoUrl}).eq('id', userId);
     } catch (e) {
       throw Exception('Erro ao atualizar URL da foto: $e');
     }
@@ -80,11 +79,44 @@ class ProfileService {
     }
   }
 
-  /// 5. Buscar perfil completo
+  /// Atualizar perfil de forma dinâmica (nome, telefone e/ou foto)
+  Future<void> updateProfileWithPhoto({
+    required String userId,
+    String? nome,
+    String? telefone,
+    File? novaFoto,
+  }) async {
+    try {
+      final Map<String, dynamic> updates = {};
+
+      if (nome != null) updates['nome'] = nome;
+      if (telefone != null) updates['telefone'] = telefone;
+
+      // Se houver nova foto, fazer upload e adicionar URL
+      if (novaFoto != null) {
+        final String fotoUrl = await uploadProfilePhoto(
+          userId: userId,
+          imageFile: novaFoto,
+        );
+        updates['foto_url'] = fotoUrl;
+      }
+
+      // Se não há nada para atualizar, lança exceção
+      if (updates.isEmpty) {
+        throw Exception('Nenhum dado fornecido para atualização');
+      }
+
+      // Atualizar no banco
+      await _profiles.update(updates).eq('id', userId);
+    } catch (e) {
+      throw Exception('Erro ao atualizar perfil: $e');
+    }
+  }
+
+  /// 6. Buscar perfil completo
   Future<Profile> getProfile(String userId) async {
     try {
-      final response =
-          await _profiles.select().eq('id', userId).single();
+      final response = await _profiles.select().eq('id', userId).single();
 
       return Profile.fromJson(response);
     } catch (e) {
@@ -92,7 +124,7 @@ class ProfileService {
     }
   }
 
-  /// 6. Deletar foto do Storage
+  /// 7. Deletar foto do Storage
   Future<void> deleteProfilePhoto(String userId) async {
     try {
       await _photoStorage.remove(['$userId.jpg']);
@@ -101,7 +133,7 @@ class ProfileService {
     }
   }
 
-  /// 7. Criar perfil completo (com foto) - Combo para registro
+  /// 8. Criar perfil completo (com foto) - Combo para registro
   Future<void> createProfileWithPhoto({
     required String userId,
     required String nome,
@@ -127,7 +159,7 @@ class ProfileService {
     }
   }
 
-  /// 8. Criar perfil completo (com foto) - Usando URL da foto
+  /// 9. Criar perfil completo (com foto) - Usando URL da foto
   Future<void> createProfileWithPhotoURL({
     required String userId,
     required String nome,
@@ -146,7 +178,7 @@ class ProfileService {
     }
   }
 
-  /// 9. Atualizar foto do perfil (deleta antiga e faz upload da nova)
+  /// 10. Atualizar foto do perfil (deleta antiga e faz upload da nova)
   Future<void> updateProfilePhoto({
     required String userId,
     required File newImageFile,
@@ -165,14 +197,11 @@ class ProfileService {
     }
   }
 
-  /// 10. Verificar se perfil existe
+  /// 11. Verificar se perfil existe
   Future<bool> profileExists(String userId) async {
     try {
       final response =
-          await _profiles
-              .select('id')
-              .eq('id', userId)
-              .maybeSingle();
+          await _profiles.select('id').eq('id', userId).maybeSingle();
 
       return response != null;
     } catch (e) {

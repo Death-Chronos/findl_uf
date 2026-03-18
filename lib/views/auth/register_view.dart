@@ -1,8 +1,8 @@
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/tools/validacoes.dart';
-import 'package:find_uf/views/widgets/tap_button.dart';
+import 'package:find_uf/views/components/tap_button.dart';
 import 'package:flutter/material.dart';
 
 class RegisterView extends StatefulWidget {
@@ -14,20 +14,20 @@ class RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _email;
-  late final TextEditingController _senha;
+  late final TextEditingController _password;
   bool _esconderSenha = true;
 
   @override
   void initState() {
     _email = TextEditingController();
-    _senha = TextEditingController();
+    _password = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
     _email.dispose();
-    _senha.dispose();
+    _password.dispose();
     super.dispose();
   }
 
@@ -52,7 +52,7 @@ class _RegisterViewState extends State<RegisterView> {
       return false;
     }
 
-    if (_senha.text.length < 6) {
+    if (_password.text.length < 6) {
       _mostrarErro("A senha deve ter pelo menos 6 caracteres.");
       return false;
     }
@@ -64,9 +64,8 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Criar conta", style: TextStyle(color: Colors.white)),
+        title: const Text("Criar conta"),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
       ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -92,7 +91,7 @@ class _RegisterViewState extends State<RegisterView> {
             const SizedBox(height: 16),
 
             TextField(
-              controller: _senha,
+              controller: _password,
               autocorrect: false,
               obscureText: _esconderSenha,
               decoration: InputDecoration(
@@ -119,7 +118,7 @@ class _RegisterViewState extends State<RegisterView> {
                     // Registra o usuário
                     await AuthService.supabase().registerUser(
                       email: _email.text,
-                      senha: _senha.text,
+                      password: _password.text,
                     );
 
                     Navigator.of(context).pushNamedAndRemoveUntil(

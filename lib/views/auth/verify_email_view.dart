@@ -1,7 +1,7 @@
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:flutter/material.dart';
-import 'package:find_uf/views/widgets/tap_button.dart';
+import 'package:find_uf/views/components/tap_button.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 
 class VerifyEmailView extends StatelessWidget {
@@ -34,10 +34,8 @@ class VerifyEmailView extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           "Verificar e-mail",
-          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           color: Colors.white,

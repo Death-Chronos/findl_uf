@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:find_uf/constants/route.dart';
+import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
 import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
-import 'package:find_uf/views/widgets/app_image_picker.dart';
-import 'package:find_uf/views/widgets/tap_button.dart';
+import 'package:find_uf/views/components/app_image_picker.dart';
+import 'package:find_uf/views/components/tap_button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -35,6 +35,50 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
     super.dispose();
   }
 
+  Future<void> _completarPerfil() async {
+    {
+      if (!_validarCampos()) return;
+
+      try {
+        final user = await AuthService.supabase().getUser;
+        if (user == null) {
+          _mostrarErro("Usuário não autenticado");
+          return;
+        }
+        String textoStatus = "...";
+
+        // Cria perfil com foto
+        setState(() {
+          textoStatus = "Fazendo upload da foto de perfil...";
+        });
+        showLoadingDialog(context: context, message: textoStatus);
+        final fotoUrl = await ProfileService().uploadProfilePhoto(
+          userId: user.id,
+          imageFile: imagemSelecionada!,
+        );
+
+        // criando perfil
+        setState(() {
+          textoStatus = "Criando perfil...";
+        });
+        await ProfileService().createProfileWithPhotoURL(
+          userId: user.id,
+          nome: _nome.text,
+          telefone: _telefone.text,
+          fotoUrl: fotoUrl,
+        );
+
+        // Navega para Home
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
+      } catch (e) {
+        _mostrarErro("Erro ao completar perfil: $e");
+        debugPrint("Erro ao completar perfil: $e");
+      }
+    }
+  }
+
   void _mostrarErro(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
@@ -62,12 +106,8 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Complete seu perfil",
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text("Complete seu perfil"),
         centerTitle: true,
-        backgroundColor: const Color(0xFF173C7B),
         automaticallyImplyLeading: false, // Remove botão voltar
       ),
       backgroundColor: Colors.white,
@@ -129,49 +169,9 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
 
             Center(
               child: TapButton(
-                onTap: () async {
-                  if (!_validarCampos()) return;
-
-                  try {
-                    final user = AuthService.supabase().getUser;
-                    if (user == null) {
-                      _mostrarErro("Usuário não autenticado");
-                      return;
-                    }
-                    String textoStatus = "...";
-
-                    // Cria perfil com foto
-                    setState(() {
-                      textoStatus = "Fazendo upload da foto de perfil...";
-                    });
-                    showLoadingDialog(context: context, message: textoStatus);
-                    final fotoUrl = await ProfileService().uploadProfilePhoto(
-                      userId: user.id,
-                      imageFile: imagemSelecionada!,
-                    );
-
-                    // criando perfil
-                    setState(() {
-                      textoStatus = "Criando perfil...";
-                    });
-                    await ProfileService().createProfileWithPhotoURL(
-                      userId: user.id,
-                      nome: _nome.text,
-                      telefone: _telefone.text,
-                      fotoUrl: fotoUrl,
-                    );
-
-                    // Navega para Home
-                    Navigator.of(
-                      context,
-                    ).pushNamedAndRemoveUntil(homeRoute, (route) => false);
-                  } catch (e) {
-                    _mostrarErro("Erro ao completar perfil: $e");
-                    debugPrint("Erro ao completar perfil: $e");
-                  }
-                },
+                onTap: () => _completarPerfil(),
                 text: "Finalizar cadastro",
-                color: const Color(0xFF99C842),
+                color: const Color(0xFF173C7B),
               ),
             ),
             const SizedBox(height: 16),

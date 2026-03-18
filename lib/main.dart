@@ -1,18 +1,22 @@
 import 'dart:async';
 
 import 'package:app_links/app_links.dart';
-import 'package:find_uf/constants/route.dart';
-import 'package:find_uf/services/profile_service.dart';
-import 'package:find_uf/services/supabase_config.dart';
+import 'package:find_uf/constants/routes.dart';
+import 'package:find_uf/models/lost_and_find_item.dart';
+import 'package:find_uf/supabase.dart';
+import 'package:find_uf/views/auth/complete_profile_view.dart';
 import 'package:find_uf/views/auth/forgot_password_view.dart';
 import 'package:find_uf/views/auth/login_view.dart';
 import 'package:find_uf/views/auth/register_view.dart';
 import 'package:find_uf/views/auth/reset_password_view.dart';
 import 'package:find_uf/views/auth/verify_email_view.dart';
-import 'package:find_uf/views/home.dart';
-import 'package:find_uf/views/profile/complete_profile_view.dart';
+import 'package:find_uf/views/home_view.dart';
+import 'package:find_uf/views/items/create_update_lost_and_found_item_view.dart';
+import 'package:find_uf/views/items/item_detail_view.dart';
+import 'package:find_uf/views/profile/change_password_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -23,8 +27,8 @@ void main() async {
 
   /// Inicializa o Supabase e permite login com tokens e etc
   await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseApiKey,
+    url: SUPABASE_URL,
+    anonKey: SUPABASE_ANON_KEY,
     authOptions: const FlutterAuthClientOptions(
       authFlowType: AuthFlowType.pkce,
     ),
@@ -95,8 +99,34 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FindlUF',
-      theme: ThemeData(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.green,
+          surface: Colors.white,
+        ),
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle(
+            systemNavigationBarColor: Colors.black,
+            systemNavigationBarIconBrightness: Brightness.light,
+          ),
+          backgroundColor: Color(0xFF173C7B),
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
       navigatorKey: _navigatorKey,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt', 'BR'), // Português Brasil
+      ],
+      locale: const Locale('pt', 'BR'),
       home: const AuthGate(),
       onGenerateRoute: (settings) {
         switch (settings.name) {
@@ -105,7 +135,7 @@ class _MyAppState extends State<MyApp> {
           case registerRoute:
             return MaterialPageRoute(builder: (_) => RegisterView());
           case homeRoute:
-            return MaterialPageRoute(builder: (_) => HomePage());
+            return MaterialPageRoute(builder: (_) => HomeView());
           case verifyEmailRoute:
             final email = settings.arguments as String;
             return MaterialPageRoute(
@@ -124,6 +154,22 @@ class _MyAppState extends State<MyApp> {
             );
           case emailVerificationCallbackRoute:
             return MaterialPageRoute(builder: (_) => CompleteProfileView());
+
+          case changePasswordRoute:
+            return MaterialPageRoute(
+              builder: (_) => const ChangePasswordView(),
+            );
+
+          case createUpdateLostAndFoundItemRoute:
+            final item = settings.arguments as LostAndFoundItem?;
+            return MaterialPageRoute(
+              builder: (_) => CreateUpdateLostAndFoundItemView(item: item),
+            );
+          case itemDetailsRoute:
+            final item = settings.arguments as LostAndFoundItem;
+            return MaterialPageRoute(
+              builder: (_) => ItemDetailsView(item: item),
+            );  
           default:
             return MaterialPageRoute(builder: (_) => RegisterView());
         }
@@ -133,54 +179,17 @@ class _MyAppState extends State<MyApp> {
 }
 
 // Widget que verifica o estado de autenticação e decide a rota inicial
-class AuthGate extends StatelessWidget {
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
-  /// Método auxiliar que verifica sessão atual e perfil do usuário
-  Future<Map<String, dynamic>> _checkSessionAndProfile() async {
-    final supabase = Supabase.instance.client;
-    final session = supabase.auth.currentSession;
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
 
-    if (session == null) {
-      return {'hasSession': false, 'hasProfile': false};
-    }
-
-    final userId = session.user.id;
-    final profileExists = await ProfileService().profileExists(userId);
-
-    return {'hasSession': true, 'hasProfile': profileExists};
-  }
-
+class _AuthGateState extends State<AuthGate> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Map<String, dynamic>>(
-      future: _checkSessionAndProfile(),
-      builder: (context, snapshot) {
-        // Enquanto verifica, mostra um loading
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        final data =
-            snapshot.data ?? {'hasSession': false, 'hasProfile': false};
-        final hasSession = data['hasSession'] as bool;
-        final hasProfile = data['hasProfile'] as bool;
-
-        if (!hasSession) {
-          // Sem sessão -> login
-          return LoginView();
-        }
-
-        if (!hasProfile) {
-          // Tem sessão mas sem perfil -> completar perfil
-          return const CompleteProfileView();
-        }
-
-        // Tem sessão e perfil -> home
-        return HomePage();
-      },
-    );
+    final session = Supabase.instance.client.auth.currentSession;
+    return session == null ? LoginView() : HomeView();
   }
 }
