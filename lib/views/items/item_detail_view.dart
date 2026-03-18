@@ -36,7 +36,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
 
   Future<void> _loadUserProfile() async {
     try {
-      final currentUser = await AuthService.supabase().getUser; // Adicione aqui
+      final currentUser = await AuthService.supabase().getUser;
       _isOwner = currentUser != null && currentUser.id == widget.item.userId;
 
       final profile = await _profileService.getProfile(widget.item.userId);
