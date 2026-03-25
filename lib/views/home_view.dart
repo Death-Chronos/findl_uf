@@ -1,5 +1,6 @@
 import 'package:find_uf/constants/routes.dart';
 import 'package:find_uf/views/home/home_feed_view.dart';
+import 'package:find_uf/views/home/chats_view.dart';
 import 'package:find_uf/views/home/my_items_view.dart';
 import 'package:find_uf/views/home/search_results_view.dart';
 import 'package:find_uf/views/profile/profile_view.dart';
@@ -101,7 +102,7 @@ class _HomeViewState extends State<HomeView> {
       case 0:
         return const HomeFeedView();
       case 1:
-        return const Center(child: Text('Chats'));
+        return const ChatsView();
       case 4:
         return const MyItemsView();
       case 5:
