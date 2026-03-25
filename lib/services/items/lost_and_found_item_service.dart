@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:find_uf/models/enums/item_category.dart';
 import 'package:find_uf/models/enums/item_status.dart';
 import 'package:find_uf/models/lost_and_find_item.dart';
+import 'package:find_uf/models/search_filters.dart';
 import 'package:find_uf/services/items/items_exceptions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -28,7 +29,6 @@ class LostAndFoundItemService {
       final file = imageFiles[index];
       final extension = path.extension(file.path).toLowerCase();
 
-      // Nome do arquivo: userId/itemId/timestamp_index.ext
       final fileName = '$userId/$itemId/${timestamp}_$index$extension';
 
       try {
@@ -53,7 +53,6 @@ class LostAndFoundItemService {
   Future<void> _deletePhotosFromStorage(List<String> urls) async {
     for (final url in urls) {
       try {
-        // Extrai o path do arquivo da URL pública
         final uri = Uri.parse(url);
         final filePath = uri.pathSegments.skip(5).join('/');
         await _itemsImageStorage.remove([filePath]);
@@ -61,6 +60,77 @@ class LostAndFoundItemService {
         debugPrint('Erro ao deletar foto: $e');
         throw DeleteLostAndFoundItemException();
       }
+    }
+  }
+
+  /// Busca itens por texto (título ou descrição), com filtros avançados
+  /// e filtro de status opcionais, tudo resolvido server-side.
+  ///
+  /// [query] é obrigatório — é o termo digitado pelo usuário.
+  /// [filters] carrega categoria, período e localização (podem ser nulos).
+  /// [status] filtra por achado/perdido — null retorna todos.
+  Future<List<LostAndFoundItem>> searchItems({
+    required String query,
+    SearchFilters? filters,
+    ItemStatus? status,
+  }) async {
+    try {
+      var dbQuery = _items
+          .select()
+          .or('titulo.ilike.%$query%,descricao.ilike.%$query%');
+
+      // Itens resolvidos nunca aparecem na busca
+      dbQuery = dbQuery.neq('status', ItemStatus.resolved.name);
+
+      // Filtro de status (achado/perdido) — substituiu a filtragem client-side
+      if (status != null) {
+        dbQuery = dbQuery.eq('status', status.name);
+      }
+
+      if (filters != null) {
+        if (filters.categoria != null) {
+          dbQuery = dbQuery.eq('categoria', filters.categoria!.name);
+        }
+
+        if (filters.dataInicio != null) {
+          dbQuery = dbQuery.gte(
+            'lost_or_found_at',
+            filters.dataInicio!.toIso8601String(),
+          );
+        }
+
+        if (filters.dataFim != null) {
+          final endOfDay = DateTime(
+            filters.dataFim!.year,
+            filters.dataFim!.month,
+            filters.dataFim!.day,
+            23,
+            59,
+            59,
+          );
+          dbQuery = dbQuery.lte(
+            'lost_or_found_at',
+            endOfDay.toIso8601String(),
+          );
+        }
+
+        if (filters.localizacao != null &&
+            filters.localizacao!.trim().isNotEmpty) {
+          dbQuery = dbQuery.ilike(
+            'localizacao',
+            '%${filters.localizacao!.trim()}%',
+          );
+        }
+      }
+
+      final response = await dbQuery.order('created_at', ascending: false);
+
+      return (response as List)
+          .map((json) => LostAndFoundItem.fromJson(json))
+          .toList();
+    } catch (e) {
+      debugPrint('Erro ao buscar itens: $e');
+      throw GetLostAndFoundItemException();
     }
   }
 
@@ -76,7 +146,6 @@ class LostAndFoundItemService {
     required List<File> imageFiles,
   }) async {
     try {
-      // 1. Cria o item com placeholder
       final response =
           await _items
               .insert({
@@ -94,14 +163,12 @@ class LostAndFoundItemService {
 
       final itemId = response['id'] as String;
 
-      // 2. Faz upload das fotos
       final fotosUrls = await _uploadItemPhotos(
         userId: userId,
         itemId: itemId,
         imageFiles: imageFiles,
       );
 
-      // 3. Atualiza com as URLs reais
       await _items
           .update({'fotos_urls': fotosUrls})
           .eq('id', itemId)
@@ -168,12 +235,11 @@ class LostAndFoundItemService {
     ItemCategory? categoria,
     ItemStatus? status,
     DateTime? lostOrFoundAt,
-    List<File>? imageFiles, // Novas fotos a serem adicionadas
-    List<String>? existingPhotosUrls, // URLs que devem permanecer
-    List<String>? photosToDelete, // URLs que devem ser deletadas
+    List<File>? imageFiles,
+    List<String>? existingPhotosUrls,
+    List<String>? photosToDelete,
   }) async {
     try {
-      // Monta o mapa com apenas os campos que foram passados
       final Map<String, dynamic> updates = {};
 
       if (titulo != null) updates['titulo'] = titulo;
@@ -185,15 +251,12 @@ class LostAndFoundItemService {
         updates['lost_or_found_at'] = lostOrFoundAt.toUtc().toIso8601String();
       }
 
-      // Gerenciamento de fotos
       List<String> finalPhotosUrls = [];
 
-      // 1. Mantém as fotos existentes que não foram marcadas para deletar
       if (existingPhotosUrls != null) {
         finalPhotosUrls.addAll(existingPhotosUrls);
       }
 
-      // 2. Faz upload das novas fotos (se houver)
       if (imageFiles != null && imageFiles.isNotEmpty) {
         final newUrls = await _uploadItemPhotos(
           userId: userId,
@@ -203,19 +266,16 @@ class LostAndFoundItemService {
         finalPhotosUrls.addAll(newUrls);
       }
 
-      // 3. Atualiza o campo fotos_urls se houve mudanças
       if (imageFiles != null ||
           existingPhotosUrls != null ||
           (photosToDelete != null && photosToDelete.isNotEmpty)) {
         updates['fotos_urls'] = finalPhotosUrls;
       }
 
-      // Atualiza o item no banco
       if (updates.isNotEmpty) {
         await _items.update(updates).eq('id', itemId).select().single();
       }
 
-      // 4. Deleta as fotos marcadas do Storage (após atualizar o banco)
       if (photosToDelete != null && photosToDelete.isNotEmpty) {
         await _deletePhotosFromStorage(photosToDelete);
       }
@@ -245,13 +305,8 @@ class LostAndFoundItemService {
   /// Deleta um item e suas fotos
   Future<void> deleteItem(String itemId) async {
     try {
-      // 1. Busca o item
       final item = await getItemById(itemId);
-
-      // 2. Deleta o item
       await _items.delete().eq('id', itemId);
-
-      // 3. Remove fotos do Storage
       await _deletePhotosFromStorage(item.fotosUrls);
     } catch (e) {
       debugPrint('Erro ao deletar item: $e');

@@ -29,16 +29,18 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
   bool _isLoading = true;
   String? _error;
   late bool _isOwner;
+  late bool _isResolved;
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _isResolved = widget.item.status == ItemStatus.resolved;
   }
 
   Future<void> _loadUserProfile() async {
     try {
-      final currentUser = await AuthService.supabase().getUser; // Adicione aqui
+      final currentUser = await AuthService.supabase().getUser;
       _isOwner = currentUser != null && currentUser.id == widget.item.userId;
 
       final profile = await _profileService.getProfile(widget.item.userId);
@@ -328,126 +330,173 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
       bottomNavigationBar:
           _userProfile != null
               ? _isOwner
-                  ? SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TapButton(
-                              onTap: () async {
-                                final result = await Navigator.of(
-                                  context,
-                                ).pushNamed(
-                                  createUpdateLostAndFoundItemRoute,
-                                  arguments: widget.item,
-                                );
-
-                                if (result == true && mounted) {
-                                  Navigator.of(context).pop(
-                                    true,
-                                  ); // Passa true indicando que houve mudança
-                                }
-                              },
-                              text: 'Editar',
-                              color: Color(0xFF173C7B),
+                  ? _isResolved
+                      ? SafeArea(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 14,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.green.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.green.shade300,
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green.shade700,
+                                    size: 22,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'Este item foi marcado como ${widget.item.status == ItemStatus.lost ? 'encontrado' : 'devolvido'}.',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.green.shade800,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TapButton(
-                              onTap: () async {
-                                final confirmed = await showConfirmationDialog(
-                                  context: context,
-                                  title: 'Confirmar exclusão',
-                                  message:
-                                      'Tem certeza que deseja deletar este item? Esta ação não pode ser desfeita.',
-                                  confirmText: 'Deletar',
-                                  cancelText: 'Cancelar',
-                                  confirmColor:
-                                      Colors
-                                          .red, // Cor vermelha para ação destrutiva
-                                );
-
-                                if (confirmed) {
-                                  try {
-                                    // Mostrar loading
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder:
-                                          (context) => const Center(
-                                            child: CircularProgressIndicator(),
-                                          ),
+                        )
+                      : SafeArea(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                TapButton(
+                                  onTap: () async {
+                                    final result = await Navigator.of(
+                                      context,
+                                    ).pushNamed(
+                                      createUpdateLostAndFoundItemRoute,
+                                      arguments: widget.item,
                                     );
 
-                                    await LostAndFoundItemService().deleteItem(
-                                      widget.item.id,
-                                    );
-
-                                    if (mounted) {
-                                      Navigator.pop(context); // Fecha o loading
-                                      Navigator.pop(
-                                        context,
-                                        true,
-                                      ); // Volta para tela anterior
-
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Item deletado com sucesso',
-                                          ),
-                                        ),
-                                      );
+                                    if (result == true && mounted) {
+                                      Navigator.of(context).pop(true);
                                     }
-                                  } catch (e) {
-                                    if (mounted) {
-                                      Navigator.pop(context); // Fecha o loading
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Erro ao deletar: $e'),
-                                        ),
-                                      );
-                                    }
-                                  }
-                                }
-                              },
-                              text: 'Deletar',
-                              color: Color(0xFFe13b39),
+                                  },
+                                  text: 'Editar',
+                                  color: Color(0xFF173C7B),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: TapButton(
+                                    onTap: () async {
+                                      final resolveLabel =
+                                          widget.item.status == ItemStatus.lost
+                                              ? 'Marcar como encontrado'
+                                              : 'Marcar como devolvido';
+
+                                      final confirmed =
+                                          await showConfirmationDialog(
+                                            context: context,
+                                            title: resolveLabel,
+                                            message:
+                                                'Tem certeza? O item não aparecerá mais nas buscas.',
+                                            confirmText: 'Confirmar',
+                                            cancelText: 'Cancelar',
+                                            confirmColor: Colors.green,
+                                          );
+
+                                      if (confirmed) {
+                                        try {
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder:
+                                                (context) => const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                          );
+
+                                          await LostAndFoundItemService()
+                                              .resolveItem(widget.item.id);
+
+                                          if (mounted) {
+                                            Navigator.pop(context);
+                                            Navigator.pop(context, true);
+
+                                            final snackMessage =
+                                                widget.item.status ==
+                                                        ItemStatus.lost
+                                                    ? 'Item marcado como encontrado!'
+                                                    : 'Item marcado como devolvido!';
+
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(snackMessage),
+                                              ),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          if (mounted) {
+                                            Navigator.pop(context);
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Erro ao resolver item: $e',
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      }
+                                    },
+                                    text:
+                                        widget.item.status == ItemStatus.lost
+                                            ? 'Encontrado'
+                                            : 'Devolvido',
+                                    color: Colors.green,
+                                    icon: Icons.check_circle_outline,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  )
+                        )
                   : SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: ElevatedButton.icon(
-                        onPressed: _openWhatsApp,
-                        icon: const Icon(Icons.chat, size: 20),
-                        label: const Text(
-                          'Entrar em contato via WhatsApp',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ElevatedButton.icon(
+                          onPressed: _openWhatsApp,
+                          icon: const Icon(Icons.chat, size: 20),
+                          label: const Text(
+                            'Entrar em contato via WhatsApp',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF25D366),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF25D366),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  )
+                    )
               : null,
     );
   }
