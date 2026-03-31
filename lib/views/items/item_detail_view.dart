@@ -1,15 +1,16 @@
 import 'package:find_uf/constants/routes.dart';
+import 'package:find_uf/helpers/category_helper.dart';
+import 'package:find_uf/models/enums/item_status.dart';
 import 'package:find_uf/models/lost_and_find_item.dart';
+import 'package:find_uf/models/profile.dart';
 import 'package:find_uf/services/auth/auth_service.dart';
+import 'package:find_uf/services/item_contacts_service.dart';
 import 'package:find_uf/services/items/lost_and_found_item_service.dart';
+import 'package:find_uf/services/profile_service.dart';
 import 'package:find_uf/tools/dialogs.dart';
 import 'package:find_uf/views/components/tap_button.dart';
 import 'package:find_uf/views/items/components/photo_gallery.dart';
 import 'package:flutter/material.dart';
-import 'package:find_uf/models/profile.dart';
-import 'package:find_uf/models/enums/item_status.dart';
-import 'package:find_uf/services/profile_service.dart';
-import 'package:find_uf/helpers/category_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ItemDetailsView extends StatefulWidget {
@@ -23,6 +24,7 @@ class ItemDetailsView extends StatefulWidget {
 
 class _ItemDetailsViewState extends State<ItemDetailsView> {
   final ProfileService _profileService = ProfileService();
+  final ItemContactsService _contactsService = ItemContactsService();
   Profile? _userProfile;
   bool _isLoading = true;
   String? _error;
@@ -64,14 +66,30 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
     final String statusText =
         widget.item.status == ItemStatus.lost ? 'perdeu' : 'achou';
     final String message = Uri.encodeComponent(
-      'Olá! Vi que você $statusText: isso: ${widget.item.titulo}. Gostaria de mais informações.',
+      'Olá! Vi que você $statusText isso: ${widget.item.titulo}. Gostaria de mais informações.',
     );
 
-    final Uri whatsappUrl = Uri.parse('https://wa.me/55$phone?text=$message');
+    final Uri whatsappUrl = Uri.parse(
+      'whatsapp://send?phone=55$phone&text=$message',
+    );
+
+    debugPrint('URL: $whatsappUrl'); // Verifica a URL gerada
+    debugPrint('Phone raw: ${_userProfile!.telefone}');
+    debugPrint('Phone clean: $phone');
 
     try {
-      if (await canLaunchUrl(whatsappUrl)) {
+      final bool canLaunch = await canLaunchUrl(whatsappUrl);
+      debugPrint('Can launch: $canLaunch');
+      if (canLaunch) {
         await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+        final currentUser = await AuthService.supabase().getUser;
+        if (currentUser != null) {
+          await _contactsService.registerContact(
+            itemId: widget.item.id,
+            initiatorId: currentUser.id,
+            receiverId: widget.item.userId,
+          );
+        }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
