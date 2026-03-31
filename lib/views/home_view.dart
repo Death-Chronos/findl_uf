@@ -185,7 +185,7 @@ class _HomeViewState extends State<HomeView> {
                       style: const TextStyle(fontSize: 16, color: Colors.white),
                     )
                   : const Text(
-                      'Findluf',
+                      'FindlUF',
                       key: ValueKey('title'),
                       style: TextStyle(
                         color: Colors.white,
