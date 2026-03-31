@@ -463,8 +463,8 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                     },
                                     text:
                                         widget.item.status == ItemStatus.lost
-                                            ? 'Encontrado'
-                                            : 'Devolvido',
+                                            ? 'Marcar como Encontrado'
+                                            : 'Marcar como Devolvido',
                                     color: Colors.green,
                                     icon: Icons.check_circle_outline,
                                   ),
