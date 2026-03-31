@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:find_uf/models/profile.dart';
+import 'package:findl_uf/models/profile.dart';
 import 'package:path/path.dart' as path;
 import 'package:supabase_flutter/supabase_flutter.dart';
 

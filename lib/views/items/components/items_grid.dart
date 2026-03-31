@@ -1,5 +1,5 @@
-import 'package:find_uf/constants/routes.dart';
-import 'package:find_uf/models/lost_and_find_item.dart';
+import 'package:findl_uf/constants/routes.dart';
+import 'package:findl_uf/models/lost_and_find_item.dart';
 import 'package:flutter/material.dart';
 
 import 'item_card.dart';

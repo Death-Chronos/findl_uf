@@ -1,15 +1,15 @@
-import 'package:find_uf/constants/routes.dart';
-import 'package:find_uf/helpers/category_helper.dart';
-import 'package:find_uf/models/enums/item_status.dart';
-import 'package:find_uf/models/lost_and_find_item.dart';
-import 'package:find_uf/models/profile.dart';
-import 'package:find_uf/services/auth/auth_service.dart';
-import 'package:find_uf/services/item_contacts_service.dart';
-import 'package:find_uf/services/items/lost_and_found_item_service.dart';
-import 'package:find_uf/services/profile_service.dart';
-import 'package:find_uf/tools/dialogs.dart';
-import 'package:find_uf/views/components/tap_button.dart';
-import 'package:find_uf/views/items/components/photo_gallery.dart';
+import 'package:findl_uf/constants/routes.dart';
+import 'package:findl_uf/helpers/category_helper.dart';
+import 'package:findl_uf/models/enums/item_status.dart';
+import 'package:findl_uf/models/lost_and_find_item.dart';
+import 'package:findl_uf/models/profile.dart';
+import 'package:findl_uf/services/auth/auth_service.dart';
+import 'package:findl_uf/services/item_contacts_service.dart';
+import 'package:findl_uf/services/items/lost_and_found_item_service.dart';
+import 'package:findl_uf/services/profile_service.dart';
+import 'package:findl_uf/tools/dialogs.dart';
+import 'package:findl_uf/views/components/tap_button.dart';
+import 'package:findl_uf/views/items/components/photo_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 

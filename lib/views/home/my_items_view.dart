@@ -1,7 +1,7 @@
-import 'package:find_uf/models/lost_and_find_item.dart';
-import 'package:find_uf/services/auth/auth_service.dart';
-import 'package:find_uf/services/items/lost_and_found_item_service.dart';
-import 'package:find_uf/views/items/components/items_grid.dart';
+import 'package:findl_uf/models/lost_and_find_item.dart';
+import 'package:findl_uf/services/auth/auth_service.dart';
+import 'package:findl_uf/services/items/lost_and_found_item_service.dart';
+import 'package:findl_uf/views/items/components/items_grid.dart';
 import 'package:flutter/material.dart';
 
 class MyItemsView extends StatefulWidget {

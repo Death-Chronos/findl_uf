@@ -1,4 +1,4 @@
-import 'package:find_uf/models/enums/item_category.dart';
+import 'package:findl_uf/models/enums/item_category.dart';
 import 'package:flutter/material.dart';
 
 class CategoryHelper {

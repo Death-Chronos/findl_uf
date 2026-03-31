@@ -1,5 +1,5 @@
-import 'package:find_uf/models/enums/item_category.dart';
-import 'package:find_uf/models/enums/item_status.dart';
+import 'package:findl_uf/models/enums/item_category.dart';
+import 'package:findl_uf/models/enums/item_status.dart';
 
 class LostAndFoundItem {
   final String id;

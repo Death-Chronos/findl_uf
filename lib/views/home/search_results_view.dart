@@ -1,8 +1,8 @@
-import 'package:find_uf/models/enums/item_status.dart';
-import 'package:find_uf/models/lost_and_find_item.dart';
-import 'package:find_uf/models/search_filters.dart';
-import 'package:find_uf/services/items/lost_and_found_item_service.dart';
-import 'package:find_uf/views/items/components/items_grid.dart';
+import 'package:findl_uf/models/enums/item_status.dart';
+import 'package:findl_uf/models/lost_and_find_item.dart';
+import 'package:findl_uf/models/search_filters.dart';
+import 'package:findl_uf/services/items/lost_and_found_item_service.dart';
+import 'package:findl_uf/views/items/components/items_grid.dart';
 import 'package:flutter/material.dart';
 
 class SearchResultsView extends StatefulWidget {

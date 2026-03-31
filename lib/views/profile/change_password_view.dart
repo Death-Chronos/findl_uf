@@ -1,6 +1,6 @@
-import 'package:find_uf/services/auth/auth_service.dart';
-import 'package:find_uf/tools/dialogs.dart';
-import 'package:find_uf/views/components/tap_button.dart';
+import 'package:findl_uf/services/auth/auth_service.dart';
+import 'package:findl_uf/tools/dialogs.dart';
+import 'package:findl_uf/views/components/tap_button.dart';
 import 'package:flutter/material.dart';
 
 class ChangePasswordView extends StatefulWidget {

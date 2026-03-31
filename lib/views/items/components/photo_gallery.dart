@@ -1,4 +1,4 @@
-import 'package:find_uf/views/items/components/fullscreen_photo.dart';
+import 'package:findl_uf/views/items/components/fullscreen_photo.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 

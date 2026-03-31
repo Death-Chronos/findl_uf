@@ -1,6 +1,6 @@
-import 'package:find_uf/models/my_auth_user.dart';
-import 'package:find_uf/services/auth/auth_provider.dart';
-import 'package:find_uf/services/auth/supabase_auth_provider.dart';
+import 'package:findl_uf/models/my_auth_user.dart';
+import 'package:findl_uf/services/auth/auth_provider.dart';
+import 'package:findl_uf/services/auth/supabase_auth_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService implements AuthProvider {

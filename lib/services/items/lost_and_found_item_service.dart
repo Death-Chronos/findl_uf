@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:find_uf/models/enums/item_category.dart';
-import 'package:find_uf/models/enums/item_status.dart';
-import 'package:find_uf/models/lost_and_find_item.dart';
-import 'package:find_uf/models/search_filters.dart';
-import 'package:find_uf/services/items/items_exceptions.dart';
+import 'package:findl_uf/models/enums/item_category.dart';
+import 'package:findl_uf/models/enums/item_status.dart';
+import 'package:findl_uf/models/lost_and_find_item.dart';
+import 'package:findl_uf/models/search_filters.dart';
+import 'package:findl_uf/services/items/items_exceptions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;

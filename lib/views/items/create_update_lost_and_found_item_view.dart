@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:find_uf/models/enums/item_category.dart';
-import 'package:find_uf/models/enums/item_status.dart';
-import 'package:find_uf/models/lost_and_find_item.dart';
-import 'package:find_uf/services/auth/auth_service.dart';
-import 'package:find_uf/services/items/lost_and_found_item_service.dart';
-import 'package:find_uf/tools/dialogs.dart';
+import 'package:findl_uf/models/enums/item_category.dart';
+import 'package:findl_uf/models/enums/item_status.dart';
+import 'package:findl_uf/models/lost_and_find_item.dart';
+import 'package:findl_uf/services/auth/auth_service.dart';
+import 'package:findl_uf/services/items/lost_and_found_item_service.dart';
+import 'package:findl_uf/tools/dialogs.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';

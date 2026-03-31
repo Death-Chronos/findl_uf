@@ -1,4 +1,4 @@
-# find_uf
+# findl_uf
 
 Sistema de Achados e Perdidos Universitário
 Projeto Flutter/Dart para gerenciamento de itens perdidos e encontrados na universidade, utilizando Supabase como backend (SaaS).

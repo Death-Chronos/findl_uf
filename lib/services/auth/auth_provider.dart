@@ -1,4 +1,4 @@
-import 'package:find_uf/models/my_auth_user.dart';
+import 'package:findl_uf/models/my_auth_user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class AuthProvider {

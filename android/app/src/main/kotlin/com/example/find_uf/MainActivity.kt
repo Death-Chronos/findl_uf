@@ -1,4 +1,4 @@
-package com.example.find_uf
+package com.example.findl_uf
 
 import io.flutter.embedding.android.FlutterActivity
 

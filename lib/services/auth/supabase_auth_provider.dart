@@ -1,6 +1,6 @@
 // lib/auth/providers/auth_provider.dart
 
-import 'package:find_uf/services/auth/auth_exceptions.dart';
+import 'package:findl_uf/services/auth/auth_exceptions.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_provider.dart';

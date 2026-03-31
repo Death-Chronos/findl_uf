@@ -1,4 +1,4 @@
-import 'package:find_uf/models/chat_preview.dart';
+import 'package:findl_uf/models/chat_preview.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ItemContactsService {

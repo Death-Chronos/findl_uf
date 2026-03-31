@@ -1,6 +1,6 @@
-import 'package:find_uf/helpers/category_helper.dart';
-import 'package:find_uf/models/enums/item_status.dart';
-import 'package:find_uf/models/lost_and_find_item.dart';
+import 'package:findl_uf/helpers/category_helper.dart';
+import 'package:findl_uf/models/enums/item_status.dart';
+import 'package:findl_uf/models/lost_and_find_item.dart';
 import 'package:flutter/material.dart';
 
 class ItemCard extends StatelessWidget {

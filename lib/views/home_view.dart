@@ -1,11 +1,11 @@
-import 'package:find_uf/constants/routes.dart';
-import 'package:find_uf/models/enums/item_category.dart';
-import 'package:find_uf/models/search_filters.dart';
-import 'package:find_uf/views/home/home_feed_view.dart';
-import 'package:find_uf/views/home/chats_view.dart';
-import 'package:find_uf/views/home/my_items_view.dart';
-import 'package:find_uf/views/home/search_results_view.dart';
-import 'package:find_uf/views/profile/profile_view.dart';
+import 'package:findl_uf/constants/routes.dart';
+import 'package:findl_uf/models/enums/item_category.dart';
+import 'package:findl_uf/models/search_filters.dart';
+import 'package:findl_uf/views/home/home_feed_view.dart';
+import 'package:findl_uf/views/home/chats_view.dart';
+import 'package:findl_uf/views/home/my_items_view.dart';
+import 'package:findl_uf/views/home/search_results_view.dart';
+import 'package:findl_uf/views/profile/profile_view.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatefulWidget {

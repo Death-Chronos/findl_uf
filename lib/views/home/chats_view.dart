@@ -1,10 +1,10 @@
-import 'package:find_uf/constants/routes.dart';
-import 'package:find_uf/models/chat_preview.dart';
-import 'package:find_uf/services/auth/auth_exceptions.dart';
-import 'package:find_uf/services/auth/auth_service.dart';
-import 'package:find_uf/services/item_contacts_service.dart';
-import 'package:find_uf/services/items/lost_and_found_item_service.dart';
-import 'package:find_uf/services/profile_service.dart';
+import 'package:findl_uf/constants/routes.dart';
+import 'package:findl_uf/models/chat_preview.dart';
+import 'package:findl_uf/services/auth/auth_exceptions.dart';
+import 'package:findl_uf/services/auth/auth_service.dart';
+import 'package:findl_uf/services/item_contacts_service.dart';
+import 'package:findl_uf/services/items/lost_and_found_item_service.dart';
+import 'package:findl_uf/services/profile_service.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
