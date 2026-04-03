@@ -133,16 +133,19 @@ class _PhotoGalleryViewerState extends State<PhotoGalleryViewer> {
           Positioned(
             bottom: 16,
             right: 16,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.6),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.zoom_in,
-                color: Colors.white,
-                size: 20,
+            child: GestureDetector(
+              onTap: () => _openFullscreen(_currentPage),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.6),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.zoom_in,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             ),
           ),
