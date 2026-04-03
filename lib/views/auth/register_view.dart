@@ -64,40 +64,66 @@ class _RegisterViewState extends State<RegisterView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Criar conta"),
+        title: const Text("Criar Conta"),
         centerTitle: true,
+        backgroundColor: const Color(0xFF99C842),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF1F8E9),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Crie sua conta para acessar o aplicativo.",
-              style: TextStyle(fontSize: 14),
+            const SizedBox(height: 20),
+            const Center(
+              child: Icon(
+                Icons.person_add,
+                size: 80,
+                color: Color(0xFF689F38),
+              ),
             ),
             const SizedBox(height: 20),
+            const Center(
+              child: Text(
+                "Crie sua conta",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF689F38),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Center(
+              child: Text(
+                "Registre-se com seu e-mail institucional",
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              ),
+            ),
+            const SizedBox(height: 30),
 
             TextField(
               controller: _email,
               keyboardType: TextInputType.emailAddress,
               decoration: const InputDecoration(
                 labelText: "Email Institucional",
-                prefixIcon: Icon(Icons.email),
+                prefixIcon: Icon(Icons.email, color: Color(0xFF689F38)),
                 border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
-
             TextField(
               controller: _password,
               autocorrect: false,
               obscureText: _esconderSenha,
               decoration: InputDecoration(
-                labelText: "Senha",
+                labelText: "Senha (mínimo 6 caracteres)",
                 border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.lock),
+                prefixIcon: const Icon(Icons.lock, color: Color(0xFF689F38)),
+                filled: true,
+                fillColor: Colors.white,
                 suffixIcon: IconButton(
                   onPressed:
                       () => setState(() => _esconderSenha = !_esconderSenha),
@@ -149,7 +175,13 @@ class _RegisterViewState extends State<RegisterView> {
                       context,
                     ).pushNamedAndRemoveUntil(loginRoute, (route) => false);
                   },
-                  child: const Text("Faça o login."),
+                  child: const Text(
+                    "Faça o login.",
+                    style: TextStyle(
+                      color: Color(0xFF689F38),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),

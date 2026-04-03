@@ -31,29 +31,54 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Login"),
+        title: const Text("Entrar"),
         centerTitle: true,
+        backgroundColor: const Color(0xFF173C7B),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFE3F2FD),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Realize o login para acessar o aplicativo, ou entre como visitante.",
-              style: TextStyle(fontSize: 14),
-            ),
-            SizedBox(height: 8),
-            TextField(
-              controller: _email,
-              decoration: InputDecoration(
-                labelText: "Email Institucional",
-                prefixIcon: Icon(Icons.email),
-                border: OutlineInputBorder(),
+            const SizedBox(height: 20),
+            const Center(
+              child: Icon(
+                Icons.login,
+                size: 80,
+                color: Color(0xFF173C7B),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 20),
+            const Center(
+              child: Text(
+                "Bem-vindo de volta!",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF173C7B),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Center(
+              child: Text(
+                "Entre com sua conta institucional",
+                style: TextStyle(fontSize: 14, color: Colors.black54),
+              ),
+            ),
+            const SizedBox(height: 30),
+            TextField(
+              controller: _email,
+              decoration: const InputDecoration(
+                labelText: "Email Institucional",
+                prefixIcon: Icon(Icons.email, color: Color(0xFF173C7B)),
+                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: _senha,
               autocorrect: false,
@@ -61,8 +86,10 @@ class _LoginViewState extends State<LoginView> {
               enableSuggestions: false,
               decoration: InputDecoration(
                 labelText: "Senha",
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.lock),
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock, color: Color(0xFF173C7B)),
+                filled: true,
+                fillColor: Colors.white,
                 suffixIcon: IconButton(
                   onPressed: () {
                     setState(() {
@@ -78,20 +105,21 @@ class _LoginViewState extends State<LoginView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Esqueceu a sua senha?"),
+                const Text("Esqueceu a sua senha?"),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pushNamed(forgotPasswordRoute);
                   },
-                  child: Text("Clique aqui"),
+                  child: const Text(
+                    "Clique aqui",
+                    style: TextStyle(color: Color(0xFF173C7B)),
+                  ),
                 ),
               ],
             ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TapButton(
+            const SizedBox(height: 16),
+            Center(
+              child: TapButton(
                   onTap: () async {
                     final email = _email.text;
                     final password = _senha.text;
@@ -137,23 +165,28 @@ class _LoginViewState extends State<LoginView> {
                       );
                     }
                   },
-                  text: "Login",
-                  color: Color(0xFF99C842),
+                  text: "Entrar",
+                  color: const Color(0xFF173C7B),
                 ),
-              ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Não possui uma conta? "),
+                const Text("Não possui uma conta? "),
                 TextButton(
                   onPressed: () {
                     Navigator.of(
                       context,
                     ).pushNamedAndRemoveUntil(registerRoute, (route) => false);
                   },
-                  child: Text("Faça o registro."),
+                  child: const Text(
+                    "Faça o registro.",
+                    style: TextStyle(
+                      color: Color(0xFF173C7B),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
