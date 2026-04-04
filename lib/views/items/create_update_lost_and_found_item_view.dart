@@ -68,6 +68,9 @@ class _CreateUpdateLostAndFoundItemViewState
                   try {
                     final img = await _picker.pickImage(
                       source: ImageSource.camera,
+                      imageQuality: 70,
+                      maxWidth: 1920,
+                      maxHeight: 1080,
                     );
                     if (img != null) {
                       setState(() {
@@ -87,7 +90,11 @@ class _CreateUpdateLostAndFoundItemViewState
                 onTap: () async {
                   Navigator.pop(context);
                   try {
-                    final List<XFile> images = await _picker.pickMultiImage();
+                    final List<XFile> images = await _picker.pickMultiImage(
+                      imageQuality: 70,
+                      maxWidth: 1920,
+                      maxHeight: 1080,
+                    );
                     if (images.isNotEmpty) {
                       setState(() {
                         _selectedImages.addAll(images);

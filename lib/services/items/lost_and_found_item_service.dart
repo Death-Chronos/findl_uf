@@ -17,50 +17,56 @@ class LostAndFoundItemService {
   );
 
   /// Faz upload das fotos para o Storage e retorna as URLs públicas
+  /// Uploads são feitos em paralelo para melhor performance
   Future<List<String>> _uploadItemPhotos({
     required String userId,
     required String itemId,
     required List<File> imageFiles,
   }) async {
-    final List<String> publicURLs = [];
     final timestamp = DateTime.now().millisecondsSinceEpoch;
 
-    for (int index = 0; index < imageFiles.length; index++) {
-      final file = imageFiles[index];
+    // Cria uma lista de Futures (uploads paralelos)
+    final uploadFutures = imageFiles.asMap().entries.map((entry) {
+      final index = entry.key;
+      final file = entry.value;
       final extension = path.extension(file.path).toLowerCase();
-
       final fileName = '$userId/$itemId/${timestamp}_$index$extension';
 
-      try {
-        await _itemsImageStorage.upload(
-          fileName,
-          file,
-          fileOptions: const FileOptions(upsert: false),
-        );
+      return _itemsImageStorage
+          .upload(
+            fileName,
+            file,
+            fileOptions: const FileOptions(upsert: false),
+          )
+          .then((_) => _itemsImageStorage.getPublicUrl(fileName));
+    }).toList();
 
-        final publicURL = _itemsImageStorage.getPublicUrl(fileName);
-        publicURLs.add(publicURL);
-      } catch (e) {
-        debugPrint('Erro ao fazer upload da imagem: $e');
-        throw UploadItemImageException();
-      }
+    try {
+      // Aguarda TODOS os uploads terminarem ao mesmo tempo
+      final publicURLs = await Future.wait(uploadFutures);
+      return publicURLs;
+    } catch (e) {
+      debugPrint('Erro ao fazer upload das imagens: $e');
+      throw UploadItemImageException();
     }
-
-    return publicURLs;
   }
 
-  /// Remove fotos do Storage
+  /// Remove fotos do Storage em paralelo
   Future<void> _deletePhotosFromStorage(List<String> urls) async {
-    for (final url in urls) {
-      try {
-        final uri = Uri.parse(url);
-        final filePath = uri.pathSegments.skip(5).join('/');
-        await _itemsImageStorage.remove([filePath]);
-      } catch (e) {
-        debugPrint('Erro ao deletar foto: $e');
-        throw DeleteLostAndFoundItemException();
-      }
-    }
+    final deleteFutures = urls.map((url) {
+      return Future(() async {
+        try {
+          final uri = Uri.parse(url);
+          final filePath = uri.pathSegments.skip(5).join('/');
+          await _itemsImageStorage.remove([filePath]);
+        } catch (e) {
+          debugPrint('Erro ao deletar foto: $e');
+          throw DeleteLostAndFoundItemException();
+        }
+      });
+    }).toList();
+
+    await Future.wait(deleteFutures);
   }
 
   /// Busca itens por texto (título ou descrição), com filtros avançados
