@@ -7,6 +7,7 @@ import 'package:findl_uf/tools/dialogs.dart';
 import 'package:findl_uf/views/components/app_image_picker.dart';
 import 'package:findl_uf/views/components/tap_button.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class UpdateProfileView extends StatefulWidget {
   const UpdateProfileView({super.key});
@@ -79,8 +80,6 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
       return;
     }
 
-    
-
     final bool nameChanged = name != _currentProfile.nome;
     final bool phoneChanged = phone != _currentProfile.telefone;
     final bool photoChanged = _selectedImage != null;
@@ -97,7 +96,6 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
     setState(() => _isSaving = true);
 
     try {
-
       await ProfileService().updateProfileWithPhoto(
         userId: _currentUser.id,
         nome: nameChanged ? name : null,
@@ -134,9 +132,7 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Atualizar Perfil",
-        ),
+        title: const Text("Atualizar Perfil"),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -145,70 +141,79 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
         ),
         backgroundColor: const Color(0xFF173C7B),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    AppImagePicker(
-                      initialImageUrl: _currentPhotoUrl,
-                      onImageSelected: (image) {
-                        setState(() {
-                          _selectedImage = image;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Toque na foto para alterar",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
+      body:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 32,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      AppImagePicker(
+                        initialImageUrl: _currentPhotoUrl,
+                        onImageSelected: (image) {
+                          setState(() {
+                            _selectedImage = image;
+                          });
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 32),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Toque na foto para alterar",
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                      const SizedBox(height: 32),
 
-                    TextField(
-                      controller: _nameController,
-                      enabled: !_isSaving,
-                      decoration: InputDecoration(
-                        labelText: "Nome completo",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      TextField(
+                        controller: _nameController,
+                        enabled: !_isSaving,
+                        decoration: InputDecoration(
+                          labelText: "Nome completo",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: const Icon(Icons.person_outline),
                         ),
-                        prefixIcon: const Icon(Icons.person_outline),
                       ),
-                    ),
-                    const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                    TextField(
-                      controller: _phoneController,
-                      enabled: !_isSaving,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        labelText: "Telefone",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      TextField(
+                        controller: _phoneController,
+                        enabled: !_isSaving,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          labelText: "Número de Whatsapp",
+                          hintText: "(99) 99999-9999",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.only(left: 12, right: 8),
+                            child: Icon(
+                              FontAwesomeIcons.whatsapp,
+                              size: 20,
+                              color: Colors.green,
+                            )
+                          ),
                         ),
-                        prefixIcon: const Icon(Icons.phone_outlined),
                       ),
-                    ),
-                    const SizedBox(height: 40),
+                      const SizedBox(height: 40),
 
-                    _isSaving
-                        ? const CircularProgressIndicator()
-                        : TapButton(
+                      _isSaving
+                          ? const CircularProgressIndicator()
+                          : TapButton(
                             text: "Salvar Alterações",
                             onTap: _updateProfile,
                             color: const Color(0xFF173C7B),
                           ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
     );
   }
 }
