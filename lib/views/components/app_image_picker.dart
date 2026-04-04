@@ -41,6 +41,9 @@ class _AppImagePickerState extends State<AppImagePicker> {
                 onTap: () async {
                   final img = await _picker.pickImage(
                     source: ImageSource.camera,
+                    imageQuality: 70,
+                    maxWidth: 1920,
+                    maxHeight: 1080,
                   );
                   if (img != null) {
                     setState(() => _image = File(img.path));
@@ -55,6 +58,7 @@ class _AppImagePickerState extends State<AppImagePicker> {
                 onTap: () async {
                   final img = await _picker.pickImage(
                     source: ImageSource.gallery,
+                    imageQuality: 70,
                   );
                   if (img != null) {
                     setState(() => _image = File(img.path));
