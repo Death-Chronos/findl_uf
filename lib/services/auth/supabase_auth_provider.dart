@@ -96,6 +96,8 @@ class SupabaseAuthProvider extends AuthProvider {
       switch (e.code) {
         case 'same_password':
           throw SamePasswordAuthException();
+        case 'weak_password':
+          throw WeakPasswordAuthException();
         default:
           throw GenericAuthException(e.toString());
       }
