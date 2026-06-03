@@ -1,6 +1,6 @@
 {
-    "name": "findl_uf",
-    "short_name": "findl_uf",
+    "name": "FindlUF",
+    "short_name": "FindlUF",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
